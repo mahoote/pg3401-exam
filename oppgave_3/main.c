@@ -9,7 +9,7 @@ int main()
 {
     int option;
 
-    // Continue to run the program until the user selects the exit option
+    // Continue to run the program until the user selects the exit option.
     while (1)
     {
         printMenu();
@@ -17,22 +17,14 @@ int main()
         // Get the user's input
         printf("\nEnter your option: ");
         scanf("%d", &option);
-
         printf("- - - - - - - - -\n");
 
-        // Perform the selected option
         switch (option)
         {
         case 0:
             printf("\nExiting menu...\n");
             return 0;
         case 1:
-            printf("\nHello World\n");
-            break;
-        case 2:
-            printf("\nThe result of 2 + 2 is %d\n", 2 + 2);
-            break;
-        case 3:
             printAllReservations();
             break;
         default:
@@ -44,7 +36,7 @@ int main()
     return 0;
 }
 
-// Print a reservation to the terminal
+// Print a reservation to the terminal.
 void printReservation(Reservation *res)
 {
     printf("Name: %s\n", res->pszName);
@@ -55,7 +47,7 @@ void printReservation(Reservation *res)
     printf("\n");
 }
 
-// Create a new reservation and return a pointer to it
+// Create a new reservation and return a pointer to it.
 Reservation *newReservation(char *name, char *room_number, int date, int num_days, float price_per_day)
 {
     Reservation *res = (Reservation *)malloc(sizeof(Reservation));
@@ -79,10 +71,10 @@ Reservation *newReservation(char *name, char *room_number, int date, int num_day
    ----------------------------------- */
 void printAllReservations()
 {
-    // Create the head of the linked list
+    // Create the head of the linked list.
     Reservation *head = newReservation("John Doe", "101", 20230101, 3, 100.00);
 
-    // Create some reservations and add them to the linked list
+    // Create some reservations and add them to the linked list.
     Reservation *res1 = newReservation("Jane Smith", "102", 20230105, 2, 75.00);
     head->pNext = res1;
     res1->pPrev = head;
@@ -91,7 +83,6 @@ void printAllReservations()
     res1->pNext = res2;
     res2->pPrev = res1;
 
-    // Print the linked list
     printf("Linked list:\n");
     Reservation *current = head;
     while (current != NULL)
