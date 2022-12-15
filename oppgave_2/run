@@ -2,4 +2,4 @@
 
 clear
 make
-./oppgave2 input.txt output.txt
+./oppgave2
