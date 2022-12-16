@@ -55,7 +55,7 @@ void addReservation(Reservation **ppHead, char *_pszName, char *_pszRoomNumber, 
     Revision    : 1.0.0
 
     Comments:
-    Create a new reservation and return a pointer to it.
+    Return a pointer to the new reservation.
    -------------------------------------------------- */
 Reservation *newReservation(char *_pszName, char *_pszRoomNumber, int _iDate, int _iNumDays, float _bPricePerDay)
 {
@@ -75,9 +75,9 @@ Reservation *newReservation(char *_pszName, char *_pszRoomNumber, int _iDate, in
     return res;
 }
 
-/* -----------------------------------
-    Currently just an example
-   ----------------------------------- */
+/* - printAllReservations() -------------------------------
+    Revision    : 1.0.0
+   -------------------------------------------------- */
 void printAllReservations()
 {
     printf("Linked list:\n");
