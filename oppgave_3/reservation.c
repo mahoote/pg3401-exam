@@ -4,9 +4,9 @@
 
 #include "include/reservation.h"
 
-Reservation *head = NULL;
+Reservation *pHead = NULL;
 
-/* - printReservation() -------------------------------
+/* printReservation() -------------------------------
     Revision    : 1.0.0
 
     Comments:
@@ -22,7 +22,27 @@ void printReservation(Reservation *res)
     printf("\n");
 }
 
-/* - addReservation() -------------------------------
+/* printAllReservations() ---------------------------
+    Revision    : 1.0.0
+   -------------------------------------------------- */
+void printAllReservations()
+{
+    printf("Linked list:\n");
+    Reservation *current = pHead;
+
+    if (current == NULL)
+    {
+        printf("Empty.\n");
+    }
+
+    while (current != NULL)
+    {
+        printReservation(current);
+        current = current->pNext;
+    }
+}
+
+/* addReservation() ---------------------------------
     Revision    : 1.0.0
 
     Comments:
@@ -30,17 +50,17 @@ void printReservation(Reservation *res)
     and add the new one to the end. If there is no head,
     the new reservation will become it.
    -------------------------------------------------- */
-void addReservation(Reservation **ppHead, char *_pszName, char *_pszRoomNumber, int _iDate, int _iNumDays, float _bPricePerDay)
+void addReservation(char *_pszName, char *_pszRoomNumber, int _iDate, int _iNumDays, float _bPricePerDay)
 {
     Reservation *pNewRes = newReservation(_pszName, _pszRoomNumber, _iDate, _iNumDays, _bPricePerDay);
 
-    if (*ppHead == NULL)
+    if (pHead == NULL)
     {
-        *ppHead = pNewRes;
+        pHead = pNewRes;
     }
     else
     {
-        Reservation *pCurrent = *ppHead;
+        Reservation *pCurrent = pHead;
         while (pCurrent->pNext != NULL)
         {
             pCurrent = pCurrent->pNext;
@@ -51,7 +71,7 @@ void addReservation(Reservation **ppHead, char *_pszName, char *_pszRoomNumber, 
     }
 }
 
-/* - newReservation() -------------------------------
+/* newReservation() ---------------------------------
     Revision    : 1.0.0
 
     Comments:
@@ -75,16 +95,51 @@ Reservation *newReservation(char *_pszName, char *_pszRoomNumber, int _iDate, in
     return res;
 }
 
-/* - printAllReservations() -------------------------------
+/* deleteLastElement() ------------------------------
     Revision    : 1.0.0
+
+    Comments:
+    If the list is empty, return immediately.
+    If the list has only one element, free the memory
+    and set the head to NULL. Else go to the end and free.
    -------------------------------------------------- */
-void printAllReservations()
+void deleteLastElement()
 {
-    printf("Linked list:\n");
-    Reservation *current = head;
+    if (pHead == NULL)
+        return;
+
+    if ((pHead)->pNext == NULL)
+    {
+        free(pHead);
+        pHead = NULL;
+        return;
+    }
+
+    Reservation *current = pHead;
+    while (current->pNext != NULL)
+    {
+        current = current->pNext;
+    }
+
+    free(current);
+    current = current->pPrev;
+    current->pNext = NULL;
+}
+
+/* deleteAllReservations() --------------------------
+    Revision    : 1.0.0
+
+    Comments:
+    Uses the head reservation to traverse the linked list
+    and delete all the reservations.
+   -------------------------------------------------- */
+void deleteAllReservations()
+{
+    Reservation *current = pHead;
     while (current != NULL)
     {
-        printReservation(current);
-        current = current->pNext;
+        Reservation *next = current->pNext;
+        free(current);
+        current = next;
     }
 }

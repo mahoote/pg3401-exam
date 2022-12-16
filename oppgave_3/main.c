@@ -1,6 +1,5 @@
 #include <stdio.h>
 
-#include "include/main.h"
 #include "include/menu.h"
 #include "include/reservation.h"
 
@@ -21,16 +20,19 @@ int main()
         switch (option)
         {
         case 0:
-            printf("\nExiting menu...\n");
+            exitMenu();
             return 0;
         case 1:
-            addReservation(&head, "John Doe", "101", 16122022, 3, 100.00);
+            addReservationOption();
+            break;
+        case 2:
+            deleteLastElementOption();
             break;
         case 6:
             printAllReservations();
             break;
         default:
-            printf("\nInvalid option. Please try again.\n");
+            printf("Invalid option. Please try again.\n");
             break;
         }
     }
