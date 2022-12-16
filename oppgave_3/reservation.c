@@ -3,6 +3,7 @@
 #include <string.h>
 
 #include "include/reservation.h"
+#include "include/timedate.h"
 
 Reservation *pHead = NULL;
 
@@ -144,29 +145,43 @@ void deleteAllReservations()
     }
 }
 
+/* deleteExpiredReservations() ----------------------
+    Revision    : 1.0.0
+
+    Comments:
+    If the list is empty, return immediately.
+    Else go through the list and delete the expired reservations.
+    Frees the memory. If the current has a previous and a next,
+    connect the two, making the previous's next the current's next and vice versa.
+    If the current element is the head, only update the head.
+   -------------------------------------------------- */
 void deleteExpiredReservations()
 {
-    // If the list is empty, return immediately
+    int iToday;
+    getCurrentDate(&iToday);
+
     if (pHead == NULL)
         return;
 
-    // Go through the list and delete the expired reservations
     Reservation *pCurrent = pHead;
     while (pCurrent != NULL)
     {
         Reservation *pNext = pCurrent->pNext;
-        if (pCurrent->iDate + pCurrent->iNumDays < 16122022)
+
+        int iEndDate = pCurrent->iDate;
+        addDays(&iEndDate, pCurrent->iNumDays);
+
+        if (iEndDate < iToday)
         {
-            // Free the memory and update the pointers
             if (pCurrent->pPrev != NULL)
             {
                 pCurrent->pPrev->pNext = pCurrent->pNext;
             }
             else
             {
-                // If the current element is the head of the list, update the head
                 pHead = pCurrent->pNext;
             }
+
             if (pCurrent->pNext != NULL)
             {
                 pCurrent->pNext->pPrev = pCurrent->pPrev;
