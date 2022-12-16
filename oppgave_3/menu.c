@@ -37,6 +37,7 @@ void printMenu()
 {
     printf("\nPlease select an option from the menu below:\n");
     printf("1. Add reservation\n");
+    printf("2. Delete last reservation\n");
     printf("6. Print reservations\n");
     printf("0. Exit menu\n");
 }
@@ -72,4 +73,13 @@ void addReservationOption()
     readInput(pszInput, "Price per day: ", &bPricePerDay, "%f", READ_INPUT_MAX_LENGTH);
 
     addReservation(pszName, pszRoomNumber, iDate, iNumDays, bPricePerDay);
+}
+
+/* deleteLastElementOption() ------------------------
+    Revision    : 1.0.0
+   -------------------------------------------------- */
+void deleteLastElementOption()
+{
+    deleteLastElement();
+    printf("Last element deleted from list.\n");
 }

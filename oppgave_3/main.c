@@ -25,6 +25,9 @@ int main()
         case 1:
             addReservationOption();
             break;
+        case 2:
+            deleteLastElementOption();
+            break;
         case 6:
             printAllReservations();
             break;

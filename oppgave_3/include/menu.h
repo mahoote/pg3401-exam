@@ -8,5 +8,6 @@
 int readInput(char *pszInput, char *pszPrompt, void *pVar, const char *pcszFormat, int iMaxLength);
 void printMenu();
 void addReservationOption();
+void deleteLastElementOption();
 
 #endif

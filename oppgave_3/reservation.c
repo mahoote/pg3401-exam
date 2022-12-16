@@ -22,6 +22,26 @@ void printReservation(Reservation *res)
     printf("\n");
 }
 
+/* printAllReservations() ---------------------------
+    Revision    : 1.0.0
+   -------------------------------------------------- */
+void printAllReservations()
+{
+    printf("Linked list:\n");
+    Reservation *current = pHead;
+
+    if (current == NULL)
+    {
+        printf("Empty.\n");
+    }
+
+    while (current != NULL)
+    {
+        printReservation(current);
+        current = current->pNext;
+    }
+}
+
 /* addReservation() ---------------------------------
     Revision    : 1.0.0
 
@@ -75,16 +95,33 @@ Reservation *newReservation(char *_pszName, char *_pszRoomNumber, int _iDate, in
     return res;
 }
 
-/* printAllReservations() ---------------------------
+/* deleteLastElement() ------------------------------
     Revision    : 1.0.0
+
+    Comments:
+    If the list is empty, return immediately.
+    If the list has only one element, free the memory
+    and set the head to NULL. Else go to the end and free.
    -------------------------------------------------- */
-void printAllReservations()
+void deleteLastElement()
 {
-    printf("Linked list:\n");
-    Reservation *current = pHead;
-    while (current != NULL)
+    if (pHead == NULL)
+        return;
+
+    if ((pHead)->pNext == NULL)
     {
-        printReservation(current);
+        free(pHead);
+        pHead = NULL;
+        return;
+    }
+
+    Reservation *current = pHead;
+    while (current->pNext != NULL)
+    {
         current = current->pNext;
     }
+
+    free(current);
+    current = current->pPrev;
+    current->pNext = NULL;
 }
