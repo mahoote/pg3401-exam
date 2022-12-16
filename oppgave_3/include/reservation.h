@@ -21,5 +21,6 @@ void addReservation(char *_pszName, char *_pszRoomNumber, int _iDate, int _iNumD
 Reservation *newReservation(char *_pszName, char *_pszRoomNumber, int _iDate, int _iNumDays, float _bPricePerDay);
 void deleteLastElement();
 void deleteAllReservations();
+void deleteExpiredReservations();
 
 #endif

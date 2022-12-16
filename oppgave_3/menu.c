@@ -13,17 +13,17 @@
     Ends loop if the input was successfully read and stored.
     User must type in correct value.
    -------------------------------------------------- */
-int readInput(char *pszInput, char *pszPrompt, void *pVar, const char *pcszFormat, int iMaxLength)
+int readInput(char *_pszInput, char *_pszPrompt, void *_pVar, const char *_pcszFormat, int _iMaxLength)
 {
     while (1)
     {
-        printf("%s", pszPrompt);
-        fgets(pszInput, iMaxLength, stdin);
+        printf("%s", _pszPrompt);
+        fgets(_pszInput, _iMaxLength, stdin);
 
         // Remove the newline character at the end of the line
-        pszInput[strcspn(pszInput, "\n")] = 0;
+        _pszInput[strcspn(_pszInput, "\n")] = 0;
 
-        if (sscanf(pszInput, pcszFormat, pVar) == 1)
+        if (sscanf(_pszInput, _pcszFormat, _pVar) == 1)
             break;
         else
             printf("Invalid input. Please try again.\n");

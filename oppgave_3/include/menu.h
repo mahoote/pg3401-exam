@@ -5,7 +5,7 @@
 #define READ_INPUT_MAX_LENGTH 256
 
 /* Methods */
-int readInput(char *pszInput, char *pszPrompt, void *pVar, const char *pcszFormat, int iMaxLength);
+int readInput(char *_pszInput, char *_pszPrompt, void *_pVar, const char *_pcszFormat, int _iMaxLength);
 void printMenu();
 void addReservationOption();
 void deleteLastElementOption();

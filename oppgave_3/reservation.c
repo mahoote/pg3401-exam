@@ -12,13 +12,13 @@ Reservation *pHead = NULL;
     Comments:
     Prints all the info regarding a reservation.
    -------------------------------------------------- */
-void printReservation(Reservation *res)
+void printReservation(Reservation *_pRes)
 {
-    printf("Name: %s\n", res->pszName);
-    printf("Room number: %s\n", res->pszRoomNumber);
-    printf("Date: %d\n", res->iDate);
-    printf("Number of days: %d\n", res->iNumDays);
-    printf("Price per day: %.2f\n", res->bPricePerDay);
+    printf("Name: %s\n", _pRes->pszName);
+    printf("Room number: %s\n", _pRes->pszRoomNumber);
+    printf("Date: %d\n", _pRes->iDate);
+    printf("Number of days: %d\n", _pRes->iNumDays);
+    printf("Price per day: %.2f\n", _pRes->bPricePerDay);
     printf("\n");
 }
 
@@ -28,17 +28,17 @@ void printReservation(Reservation *res)
 void printAllReservations()
 {
     printf("Linked list:\n");
-    Reservation *current = pHead;
+    Reservation *pCurrent = pHead;
 
-    if (current == NULL)
+    if (pCurrent == NULL)
     {
         printf("Empty.\n");
     }
 
-    while (current != NULL)
+    while (pCurrent != NULL)
     {
-        printReservation(current);
-        current = current->pNext;
+        printReservation(pCurrent);
+        pCurrent = pCurrent->pNext;
     }
 }
 
@@ -79,20 +79,20 @@ void addReservation(char *_pszName, char *_pszRoomNumber, int _iDate, int _iNumD
    -------------------------------------------------- */
 Reservation *newReservation(char *_pszName, char *_pszRoomNumber, int _iDate, int _iNumDays, float _bPricePerDay)
 {
-    Reservation *res = (Reservation *)malloc(sizeof(Reservation));
+    Reservation *pRes = (Reservation *)malloc(sizeof(Reservation));
 
     // Copy the provided information into the reservation struct
-    strcpy(res->pszName, _pszName);
-    strcpy(res->pszRoomNumber, _pszRoomNumber);
-    res->iDate = _iDate;
-    res->iNumDays = _iNumDays;
-    res->bPricePerDay = _bPricePerDay;
+    strcpy(pRes->pszName, _pszName);
+    strcpy(pRes->pszRoomNumber, _pszRoomNumber);
+    pRes->iDate = _iDate;
+    pRes->iNumDays = _iNumDays;
+    pRes->bPricePerDay = _bPricePerDay;
 
     // Set the pointers to NULL
-    res->pPrev = NULL;
-    res->pNext = NULL;
+    pRes->pPrev = NULL;
+    pRes->pNext = NULL;
 
-    return res;
+    return pRes;
 }
 
 /* deleteLastElement() ------------------------------
@@ -115,15 +115,15 @@ void deleteLastElement()
         return;
     }
 
-    Reservation *current = pHead;
-    while (current->pNext != NULL)
+    Reservation *pCurrent = pHead;
+    while (pCurrent->pNext != NULL)
     {
-        current = current->pNext;
+        pCurrent = pCurrent->pNext;
     }
 
-    free(current);
-    current = current->pPrev;
-    current->pNext = NULL;
+    free(pCurrent);
+    pCurrent = pCurrent->pPrev;
+    pCurrent->pNext = NULL;
 }
 
 /* deleteAllReservations() --------------------------
@@ -131,15 +131,48 @@ void deleteLastElement()
 
     Comments:
     Uses the head reservation to traverse the linked list
-    and delete all the reservations.
+    and delete all the reservations. Frees the memory.
    -------------------------------------------------- */
 void deleteAllReservations()
 {
-    Reservation *current = pHead;
-    while (current != NULL)
+    Reservation *pCurrent = pHead;
+    while (pCurrent != NULL)
     {
-        Reservation *next = current->pNext;
-        free(current);
-        current = next;
+        Reservation *pNext = pCurrent->pNext;
+        free(pCurrent);
+        pCurrent = pNext;
+    }
+}
+
+void deleteExpiredReservations()
+{
+    // If the list is empty, return immediately
+    if (pHead == NULL)
+        return;
+
+    // Go through the list and delete the expired reservations
+    Reservation *pCurrent = pHead;
+    while (pCurrent != NULL)
+    {
+        Reservation *pNext = pCurrent->pNext;
+        if (pCurrent->iDate + pCurrent->iNumDays < 16122022)
+        {
+            // Free the memory and update the pointers
+            if (pCurrent->pPrev != NULL)
+            {
+                pCurrent->pPrev->pNext = pCurrent->pNext;
+            }
+            else
+            {
+                // If the current element is the head of the list, update the head
+                pHead = pCurrent->pNext;
+            }
+            if (pCurrent->pNext != NULL)
+            {
+                pCurrent->pNext->pPrev = pCurrent->pPrev;
+            }
+            free(pCurrent);
+        }
+        pCurrent = pNext;
     }
 }
