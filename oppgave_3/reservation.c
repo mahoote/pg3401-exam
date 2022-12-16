@@ -125,3 +125,21 @@ void deleteLastElement()
     current = current->pPrev;
     current->pNext = NULL;
 }
+
+/* deleteAllReservations() --------------------------
+    Revision    : 1.0.0
+
+    Comments:
+    Uses the head reservation to traverse the linked list
+    and delete all the reservations.
+   -------------------------------------------------- */
+void deleteAllReservations()
+{
+    Reservation *current = pHead;
+    while (current != NULL)
+    {
+        Reservation *next = current->pNext;
+        free(current);
+        current = next;
+    }
+}

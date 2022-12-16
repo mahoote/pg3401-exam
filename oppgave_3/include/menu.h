@@ -9,5 +9,6 @@ int readInput(char *pszInput, char *pszPrompt, void *pVar, const char *pcszForma
 void printMenu();
 void addReservationOption();
 void deleteLastElementOption();
+void exitMenu();
 
 #endif

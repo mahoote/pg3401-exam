@@ -83,3 +83,15 @@ void deleteLastElementOption()
     deleteLastElement();
     printf("Last element deleted from list.\n");
 }
+
+/* exitMenu() ---------------------------------------
+    Revision    : 1.0.0
+
+    Comments:
+    Frees the reservations memory.
+   -------------------------------------------------- */
+void exitMenu()
+{
+    deleteAllReservations();
+    printf("\nExiting menu...\n");
+}

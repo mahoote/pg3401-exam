@@ -20,7 +20,7 @@ int main()
         switch (option)
         {
         case 0:
-            printf("\nExiting menu...\n");
+            exitMenu();
             return 0;
         case 1:
             addReservationOption();
