@@ -6,7 +6,7 @@
 
 Reservation *pHead = NULL;
 
-/* - printReservation() -------------------------------
+/* printReservation() -------------------------------
     Revision    : 1.0.0
 
     Comments:
@@ -22,7 +22,7 @@ void printReservation(Reservation *res)
     printf("\n");
 }
 
-/* - addReservation() -------------------------------
+/* addReservation() ---------------------------------
     Revision    : 1.0.0
 
     Comments:
@@ -51,7 +51,7 @@ void addReservation(char *_pszName, char *_pszRoomNumber, int _iDate, int _iNumD
     }
 }
 
-/* - newReservation() -------------------------------
+/* newReservation() ---------------------------------
     Revision    : 1.0.0
 
     Comments:
@@ -75,7 +75,7 @@ Reservation *newReservation(char *_pszName, char *_pszRoomNumber, int _iDate, in
     return res;
 }
 
-/* - printAllReservations() -------------------------------
+/* printAllReservations() ---------------------------
     Revision    : 1.0.0
    -------------------------------------------------- */
 void printAllReservations()

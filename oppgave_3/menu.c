@@ -5,24 +5,34 @@
 #include "include/menu.h"
 #include "include/reservation.h"
 
-// Read input and store it in a variable
-// Returns 1 if the input was successfully read and stored, 0 otherwise
-int readInput(char *pszInput, char *pszPrompt, void *pVar, const char *pcszFormat)
+/* readInput() --------------------------------------
+    Revision    : 1.0.0
+
+    Comments:
+    Read input and store it in a variable.
+    Ends loop if the input was successfully read and stored.
+    User must type in correct value.
+   -------------------------------------------------- */
+int readInput(char *pszInput, char *pszPrompt, void *pVar, const char *pcszFormat, int iMaxLength)
 {
     while (1)
     {
         printf("%s", pszPrompt);
-        fgets(pszInput, 256, stdin);
+        fgets(pszInput, iMaxLength, stdin);
+
         // Remove the newline character at the end of the line
         pszInput[strcspn(pszInput, "\n")] = 0;
 
         if (sscanf(pszInput, pcszFormat, pVar) == 1)
-            return 1;
+            break;
         else
             printf("Invalid input. Please try again.\n");
     }
 }
 
+/* printMenu() --------------------------------------
+    Revision    : 1.0.0
+   -------------------------------------------------- */
 void printMenu()
 {
     printf("\nPlease select an option from the menu below:\n");
@@ -31,9 +41,15 @@ void printMenu()
     printf("0. Exit menu\n");
 }
 
+/* addReservationOption() ---------------------------
+    Revision    : 1.0.0
+
+    Comments:
+    Reads the different reservation fields from the user.
+   -------------------------------------------------- */
 void addReservationOption()
 {
-    char pszInput[256]; // Large enough to hold multiple lines of input
+    char pszInput[READ_INPUT_MAX_LENGTH];
     char pszName[32];
     char pszRoomNumber[8];
     int iDate;
@@ -42,17 +58,18 @@ void addReservationOption()
 
     printf("Enter the following information:\n");
 
-    int c = getchar(); // Consume any pending newline characters
+    // Consume any pending newline characters.
+    int c = getchar();
     while (c != '\n' && c != EOF)
     {
         c = getchar();
     }
 
-    readInput(pszInput, "Name: ", pszName, "%[^\n]");
-    readInput(pszInput, "Room number: ", pszRoomNumber, "%[^\n]");
-    readInput(pszInput, "Date: ", &iDate, "%d");
-    readInput(pszInput, "Number of days: ", &iNumDays, "%d");
-    readInput(pszInput, "Price per day: ", &bPricePerDay, "%f");
+    readInput(pszInput, "Name: ", pszName, "%[^\n]", 32);
+    readInput(pszInput, "Room number: ", pszRoomNumber, "%[^\n]", 8);
+    readInput(pszInput, "Date: ", &iDate, "%d", READ_INPUT_MAX_LENGTH);
+    readInput(pszInput, "Number of days: ", &iNumDays, "%d", READ_INPUT_MAX_LENGTH);
+    readInput(pszInput, "Price per day: ", &bPricePerDay, "%f", READ_INPUT_MAX_LENGTH);
 
     addReservation(pszName, pszRoomNumber, iDate, iNumDays, bPricePerDay);
 }
