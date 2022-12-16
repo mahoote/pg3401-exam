@@ -14,12 +14,9 @@ typedef struct reservation
     struct reservation *pNext;
 } Reservation;
 
-/* Variables */
-extern Reservation *head;
-
 /* Methods */
 void printReservation(Reservation *res);
-void addReservation(Reservation **ppHead, char *_pszName, char *_pszRoomNumber, int _iDate, int _iNumDays, float _bPricePerDay);
+void addReservation(char *_pszName, char *_pszRoomNumber, int _iDate, int _iNumDays, float _bPricePerDay);
 Reservation *newReservation(char *_pszName, char *_pszRoomNumber, int _iDate, int _iNumDays, float _bPricePerDay);
 void printAllReservations();
 

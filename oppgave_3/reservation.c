@@ -4,7 +4,7 @@
 
 #include "include/reservation.h"
 
-Reservation *head = NULL;
+Reservation *pHead = NULL;
 
 /* - printReservation() -------------------------------
     Revision    : 1.0.0
@@ -30,17 +30,17 @@ void printReservation(Reservation *res)
     and add the new one to the end. If there is no head,
     the new reservation will become it.
    -------------------------------------------------- */
-void addReservation(Reservation **ppHead, char *_pszName, char *_pszRoomNumber, int _iDate, int _iNumDays, float _bPricePerDay)
+void addReservation(char *_pszName, char *_pszRoomNumber, int _iDate, int _iNumDays, float _bPricePerDay)
 {
     Reservation *pNewRes = newReservation(_pszName, _pszRoomNumber, _iDate, _iNumDays, _bPricePerDay);
 
-    if (*ppHead == NULL)
+    if (pHead == NULL)
     {
-        *ppHead = pNewRes;
+        pHead = pNewRes;
     }
     else
     {
-        Reservation *pCurrent = *ppHead;
+        Reservation *pCurrent = pHead;
         while (pCurrent->pNext != NULL)
         {
             pCurrent = pCurrent->pNext;
@@ -81,7 +81,7 @@ Reservation *newReservation(char *_pszName, char *_pszRoomNumber, int _iDate, in
 void printAllReservations()
 {
     printf("Linked list:\n");
-    Reservation *current = head;
+    Reservation *current = pHead;
     while (current != NULL)
     {
         printReservation(current);
