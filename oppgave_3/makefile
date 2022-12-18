@@ -6,11 +6,11 @@ CLFAGS += -I$(INCLDIR)
 OBJDIR = obj
 
 # List all the header files here.
-_DEPS = menu.h reservation.h
+_DEPS = menu.h reservation.h timedate.h
 DEPS = $(patsubst %,$(INCLDIR)/%, $(_DEPS))
 
 # List all source files here, but give .o file convention.
-_OBJS = main.o menu.o reservation.o
+_OBJS = main.o menu.o reservation.o timedate.o
 OBJS = $(patsubst %,$(OBJDIR)/%, $(_OBJS))
 
 $(OBJDIR)/%.o: %.c $(DEPS)

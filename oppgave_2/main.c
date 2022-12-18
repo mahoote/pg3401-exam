@@ -3,8 +3,8 @@
 
 int main(int argc, char **argv)
 {
-    char pszInputFile[] = "input.txt";
-    char pszOutputFile[] = "output.txt";
+    const char pszInputFile[] = "input.txt";
+    const char pszOutputFile[] = "output.txt";
 
     // Open the input file in read-only mode
     FILE *pfInput = fopen(pszInputFile, "r");
@@ -22,7 +22,6 @@ int main(int argc, char **argv)
         return 1;
     }
 
-    // Read one character at a time from the input file
     char ch;
     while ((ch = fgetc(pfInput)) != EOF)
     {
@@ -33,7 +32,6 @@ int main(int argc, char **argv)
         fputs(pszHex, pfOutput);
     }
 
-    // Close the input and output files
     fclose(pfInput);
     fclose(pfOutput);
 
