@@ -39,6 +39,7 @@ void printMenu()
     printf("1. Add reservation\n");
     printf("2. Delete last reservation\n");
     printf("3. Delete expired reservations\n");
+    printf("4. Get reservation by guest name\n");
     printf("6. Print reservations\n");
     printf("0. Exit menu\n");
 }
@@ -95,4 +96,22 @@ void exitMenu()
 {
     deleteAllReservations();
     printf("\nExiting menu...\n");
+}
+
+void getReservationByNameOption()
+{
+    char pszInput[READ_INPUT_MAX_LENGTH];
+    char pszName[32];
+
+    // Consume any pending newline characters.
+    int c = getchar();
+    while (c != '\n' && c != EOF)
+    {
+        c = getchar();
+    }
+
+    printf("Enter the guest ");
+    readInput(pszInput, "name: ", pszName, "%[^\n]", 32);
+
+    getReservationByName(pszName);
 }

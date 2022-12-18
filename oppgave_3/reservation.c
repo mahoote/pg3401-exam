@@ -191,3 +191,31 @@ void deleteExpiredReservations()
         pCurrent = pNext;
     }
 }
+
+void getReservationByName(char *_pszName)
+{
+
+    if (pHead == NULL)
+    {
+        printf("No reservations exist.\n");
+        return;
+    }
+
+    Reservation *pCurrent = pHead;
+
+    while (pCurrent != NULL)
+    {
+        if (strcmp(pCurrent->pszName, _pszName) == 0)
+        {
+            printf("Reservation found:\n\n");
+            printReservation(pCurrent);
+            return;
+        }
+        else
+        {
+            pCurrent = pCurrent->pNext;
+        }
+    }
+
+    printf("The guest does not have a reservation.\n");
+}

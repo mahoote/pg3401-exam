@@ -10,5 +10,6 @@ void printMenu();
 void addReservationOption();
 void deleteLastElementOption();
 void exitMenu();
+void getReservationByNameOption();
 
 #endif

@@ -30,6 +30,9 @@ int main()
         case 3:
             deleteExpiredReservations();
             break;
+        case 4:
+            getReservationByNameOption();
+            break;
         case 6:
             printAllReservations();
             break;

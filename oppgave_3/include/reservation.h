@@ -22,5 +22,6 @@ Reservation *newReservation(char *_pszName, char *_pszRoomNumber, int _iDate, in
 void deleteLastElement();
 void deleteAllReservations();
 void deleteExpiredReservations();
+void getReservationByName(char *_pszName);
 
 #endif
