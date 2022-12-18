@@ -176,8 +176,9 @@ void deleteLastElement()
         pCurrent = pCurrent->pNext;
     }
 
+    Reservation *pPrev = pCurrent->pPrev;
     free(pCurrent);
-    pCurrent = pCurrent->pPrev;
+    pCurrent = pPrev;
     pCurrent->pNext = NULL;
 }
 
