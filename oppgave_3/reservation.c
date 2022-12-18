@@ -233,7 +233,7 @@ void deleteExpiredReservations(int *_iReservationCount)
 
         if (iEndDate < iToday)
         {
-            *_iReservationCount++;
+            ++*_iReservationCount;
 
             if (pCurrent->pPrev != NULL)
             {
