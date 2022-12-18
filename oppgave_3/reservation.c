@@ -104,6 +104,7 @@ int printAllReservationsByCurrentDate()
     Uses the head reservation to traverse the linked list
     and add the new one to the end. If there is no head,
     the new reservation will become it.
+    _iDate format = YYYYMMDD.
    -------------------------------------------------- */
 void addReservation(char *_pszName, char *_pszRoomNumber, int _iDate, int _iNumDays, float _bPricePerDay)
 {
@@ -131,6 +132,7 @@ void addReservation(char *_pszName, char *_pszRoomNumber, int _iDate, int _iNumD
 
     Comments:
     Return a pointer to the new reservation.
+    _iDate format = YYYYMMDD.
    -------------------------------------------------- */
 Reservation *newReservation(char *_pszName, char *_pszRoomNumber, int _iDate, int _iNumDays, float _bPricePerDay)
 {
@@ -210,7 +212,7 @@ void deleteAllReservations()
     connect the two, making the previous's next the current's next and vice versa.
     If the current element is the head, only update the head.
    -------------------------------------------------- */
-void deleteExpiredReservations()
+void deleteExpiredReservations(int *_iReservationCount)
 {
     int iToday;
     getCurrentDate(&iToday);
@@ -219,6 +221,8 @@ void deleteExpiredReservations()
         return;
 
     Reservation *pCurrent = pHead;
+    *_iReservationCount = 0;
+
     while (pCurrent != NULL)
     {
         Reservation *pNext = pCurrent->pNext;
@@ -228,6 +232,8 @@ void deleteExpiredReservations()
 
         if (iEndDate < iToday)
         {
+            *_iReservationCount++;
+
             if (pCurrent->pPrev != NULL)
             {
                 pCurrent->pPrev->pNext = pCurrent->pNext;

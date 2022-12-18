@@ -22,7 +22,7 @@ void addReservation(char *_pszName, char *_pszRoomNumber, int _iDate, int _iNumD
 Reservation *newReservation(char *_pszName, char *_pszRoomNumber, int _iDate, int _iNumDays, float _bPricePerDay);
 void deleteLastElement();
 void deleteAllReservations();
-void deleteExpiredReservations();
+void deleteExpiredReservations(int *_iReservationCount);
 int getReservationByName(char *_pszName, Reservation **_pRes);
 int sumBookingPricesByDate(int _iDate, int *_iSum);
 

@@ -139,8 +139,10 @@ void deleteLastElementOption()
    -------------------------------------------------- */
 void deleteExpiredReservationsOption()
 {
-    deleteExpiredReservations();
-    printf("Expired reservations deleted.\n");
+    int iReservationCount;
+    deleteExpiredReservations(&iReservationCount);
+    printf("%d ", iReservationCount);
+    printf("expired reservations deleted.\n");
 }
 
 /* getReservationByNameOption -----------------------
