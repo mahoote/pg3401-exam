@@ -23,6 +23,20 @@ void printReservation(Reservation *_pRes)
     printf("\n");
 }
 
+/* printReservationMin() ----------------------------
+    Revision    : 1.0.0
+
+    Comments:
+    A minimal version of printReservation().
+   -------------------------------------------------- */
+void printReservationMin(Reservation *_pRes)
+{
+    printf("Name: %s\n", _pRes->pszName);
+    printf("Room number: %s\n", _pRes->pszRoomNumber);
+    printf("Number of days: %d\n", _pRes->iNumDays);
+    printf("\n");
+}
+
 /* printAllReservations() ---------------------------
     Revision    : 1.0.0
    -------------------------------------------------- */
@@ -42,6 +56,45 @@ int printAllReservations()
     }
 
     return 0;
+}
+
+/* printAllReservationsByDate() ---------------------
+    Revision    : 1.0.0
+
+    Comments:
+    Uses the head reservation to traverse the linked list
+    and if the element's date is today's date, print the
+    reservation with minimal details (name, room, numDays).
+   -------------------------------------------------- */
+int printAllReservationsByCurrentDate()
+{
+    if (pHead == NULL)
+    {
+        return 1;
+    }
+
+    int iToday, iReservationCount = 0;
+    Reservation *pCurrent = pHead;
+
+    getCurrentDate(&iToday);
+
+    while (pCurrent != NULL)
+    {
+        int *iDate = &pCurrent->iDate;
+
+        if (iToday == *iDate)
+        {
+            iReservationCount++;
+            printReservationMin(pCurrent);
+        }
+
+        pCurrent = pCurrent->pNext;
+    }
+
+    if (iReservationCount > 0)
+        return 0;
+
+    return 2;
 }
 
 /* addReservation() ---------------------------------

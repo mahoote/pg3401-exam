@@ -37,6 +37,9 @@ int main()
             sumBookingPricesByDateOption();
             break;
         case 6:
+            printAllReservationsByCurrentDateOption();
+            break;
+        case 7: // Secret option.
             printAllReservationsOption();
             break;
         default:

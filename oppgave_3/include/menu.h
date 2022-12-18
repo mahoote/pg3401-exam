@@ -14,5 +14,6 @@ void deleteExpiredReservationsOption();
 void getReservationByNameOption();
 void sumBookingPricesByDateOption();
 void printAllReservationsOption();
+void printAllReservationsByCurrentDateOption();
 
 #endif

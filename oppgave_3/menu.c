@@ -40,7 +40,7 @@ void printMenu()
     printf("3. Delete expired reservations\n");
     printf("4. Get reservation by guest name\n");
     printf("5. Sum booking prices based on date\n");
-    printf("6. Print reservations\n");
+    printf("6. Print todays reservations\n");
     printf("0. Exit menu\n");
 }
 
@@ -68,6 +68,25 @@ void printAllReservationsOption()
     if (iVal == 1)
     {
         printf("List empty.\n");
+    }
+}
+
+/* printAllReservationsOption() ---------------------
+    Revision    : 1.0.0
+   -------------------------------------------------- */
+void printAllReservationsByCurrentDateOption()
+{
+    printf("Reservations: \n\n");
+
+    int iVal = printAllReservationsByCurrentDate();
+
+    if (iVal == 1)
+    {
+        printf("List empty.\n");
+    }
+    else if (iVal == 2)
+    {
+        printf("No reservations today.\n");
     }
 }
 
