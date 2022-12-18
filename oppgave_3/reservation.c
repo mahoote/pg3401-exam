@@ -26,21 +26,22 @@ void printReservation(Reservation *_pRes)
 /* printAllReservations() ---------------------------
     Revision    : 1.0.0
    -------------------------------------------------- */
-void printAllReservations()
+int printAllReservations()
 {
-    printf("Linked list:\n");
-    Reservation *pCurrent = pHead;
-
-    if (pCurrent == NULL)
+    if (pHead == NULL)
     {
-        printf("Empty.\n");
+        return 1;
     }
+
+    Reservation *pCurrent = pHead;
 
     while (pCurrent != NULL)
     {
         printReservation(pCurrent);
         pCurrent = pCurrent->pNext;
     }
+
+    return 0;
 }
 
 /* addReservation() ---------------------------------
@@ -82,14 +83,12 @@ Reservation *newReservation(char *_pszName, char *_pszRoomNumber, int _iDate, in
 {
     Reservation *pRes = (Reservation *)malloc(sizeof(Reservation));
 
-    // Copy the provided information into the reservation struct
     strcpy(pRes->pszName, _pszName);
     strcpy(pRes->pszRoomNumber, _pszRoomNumber);
     pRes->iDate = _iDate;
     pRes->iNumDays = _iNumDays;
     pRes->bPricePerDay = _bPricePerDay;
 
-    // Set the pointers to NULL
     pRes->pPrev = NULL;
     pRes->pNext = NULL;
 
@@ -136,6 +135,9 @@ void deleteLastElement()
    -------------------------------------------------- */
 void deleteAllReservations()
 {
+    if (pHead == NULL)
+        return;
+
     Reservation *pCurrent = pHead;
     while (pCurrent != NULL)
     {
@@ -192,13 +194,21 @@ void deleteExpiredReservations()
     }
 }
 
-void getReservationByName(char *_pszName)
-{
+/* getReservationByName() ---------------------------
+    Revision    : 1.0.0
 
+    Comments:
+    If the list is empty, return immediately.
+    Else go through the list and compare reservation name with input.
+    Return if the guest is found and print to terminal. Else if not found
+    print "not found" message. Returns the first reservation where the name
+    occurs.
+   -------------------------------------------------- */
+int getReservationByName(char *_pszName, Reservation **_pRes)
+{
     if (pHead == NULL)
     {
-        printf("No reservations exist.\n");
-        return;
+        return 1;
     }
 
     Reservation *pCurrent = pHead;
@@ -207,9 +217,8 @@ void getReservationByName(char *_pszName)
     {
         if (strcmp(pCurrent->pszName, _pszName) == 0)
         {
-            printf("Reservation found:\n\n");
-            printReservation(pCurrent);
-            return;
+            *_pRes = pCurrent;
+            return 0;
         }
         else
         {
@@ -217,5 +226,42 @@ void getReservationByName(char *_pszName)
         }
     }
 
-    printf("The guest does not have a reservation.\n");
+    return 2;
+}
+
+/* sumBookingPricesByDate() -------------------------
+    Revision    : 1.0.0
+
+    Comments:
+    Uses the head reservation to traverse the linked list
+    and find elements where the input date is between reservation
+    start and end date. If the date is between the values, the price per day
+    is added to the sum.
+   -------------------------------------------------- */
+int sumBookingPricesByDate(int _iDate, int *_iSum)
+{
+    *_iSum = 0;
+
+    if (pHead == NULL)
+    {
+        return 1;
+    }
+
+    Reservation *pCurrent = pHead;
+
+    while (pCurrent != NULL)
+    {
+        int *iDate = &pCurrent->iDate;
+        int iEndDate = *iDate;
+        addDays(&iEndDate, pCurrent->iNumDays);
+
+        if (_iDate >= *iDate && _iDate <= iEndDate)
+        {
+            *_iSum += pCurrent->bPricePerDay;
+        }
+
+        pCurrent = pCurrent->pNext;
+    }
+
+    return 0;
 }

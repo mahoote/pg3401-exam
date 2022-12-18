@@ -15,13 +15,14 @@ typedef struct reservation
 } Reservation;
 
 /* Methods */
-void printReservation(Reservation *res);
-void printAllReservations();
+void printReservation(Reservation *_pRes);
+int printAllReservations();
 void addReservation(char *_pszName, char *_pszRoomNumber, int _iDate, int _iNumDays, float _bPricePerDay);
 Reservation *newReservation(char *_pszName, char *_pszRoomNumber, int _iDate, int _iNumDays, float _bPricePerDay);
 void deleteLastElement();
 void deleteAllReservations();
 void deleteExpiredReservations();
-void getReservationByName(char *_pszName);
+int getReservationByName(char *_pszName, Reservation **_pRes);
+int sumBookingPricesByDate(int _iDate, int *_iSum);
 
 #endif

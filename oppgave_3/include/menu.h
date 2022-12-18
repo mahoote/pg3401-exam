@@ -7,9 +7,12 @@
 /* Methods */
 int readInput(char *_pszInput, char *_pszPrompt, void *_pVar, const char *_pcszFormat, int _iMaxLength);
 void printMenu();
+void exitMenu();
 void addReservationOption();
 void deleteLastElementOption();
-void exitMenu();
+void deleteExpiredReservationsOption();
 void getReservationByNameOption();
+void sumBookingPricesByDateOption();
+void printAllReservationsOption();
 
 #endif

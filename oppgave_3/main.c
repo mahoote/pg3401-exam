@@ -1,7 +1,6 @@
 #include <stdio.h>
 
 #include "include/menu.h"
-#include "include/reservation.h"
 
 int main()
 {
@@ -27,14 +26,18 @@ int main()
             break;
         case 2:
             deleteLastElementOption();
+            break;
         case 3:
-            deleteExpiredReservations();
+            deleteExpiredReservationsOption();
             break;
         case 4:
             getReservationByNameOption();
             break;
+        case 5:
+            sumBookingPricesByDateOption();
+            break;
         case 6:
-            printAllReservations();
+            printAllReservationsOption();
             break;
         default:
             printf("Invalid option. Please try again.\n");

@@ -40,8 +40,36 @@ void printMenu()
     printf("2. Delete last reservation\n");
     printf("3. Delete expired reservations\n");
     printf("4. Get reservation by guest name\n");
+    printf("5. Sum booking prices based on date\n");
     printf("6. Print reservations\n");
     printf("0. Exit menu\n");
+}
+
+/* exitMenu() ---------------------------------------
+    Revision    : 1.0.0
+
+    Comments:
+    Frees the reservations memory.
+   -------------------------------------------------- */
+void exitMenu()
+{
+    deleteAllReservations();
+    printf("\nExiting menu...\n");
+}
+
+/* printAllReservationsOption() ---------------------
+    Revision    : 1.0.0
+   -------------------------------------------------- */
+void printAllReservationsOption()
+{
+    printf("Reservations: \n\n");
+
+    int iVal = printAllReservations();
+
+    if (iVal == 1)
+    {
+        printf("List empty.\n");
+    }
 }
 
 /* addReservationOption() ---------------------------
@@ -75,6 +103,8 @@ void addReservationOption()
     readInput(pszInput, "Price per day: ", &bPricePerDay, "%f", READ_INPUT_MAX_LENGTH);
 
     addReservation(pszName, pszRoomNumber, iDate, iNumDays, bPricePerDay);
+
+    printf("\nReservation added.\n");
 }
 
 /* deleteLastElementOption() ------------------------
@@ -83,25 +113,30 @@ void addReservationOption()
 void deleteLastElementOption()
 {
     deleteLastElement();
-    printf("Last element deleted from list.\n");
+    printf("Last reservation deleted.\n");
 }
 
-/* exitMenu() ---------------------------------------
+/* deleteExpiredReservationsOption() ----------------
+    Revision    : 1.0.0
+   -------------------------------------------------- */
+void deleteExpiredReservationsOption()
+{
+    deleteExpiredReservations();
+    printf("Expired reservations deleted.\n");
+}
+
+/* getReservationByNameOption -----------------------
     Revision    : 1.0.0
 
     Comments:
-    Frees the reservations memory.
+    Get input name from user and run get method.
    -------------------------------------------------- */
-void exitMenu()
-{
-    deleteAllReservations();
-    printf("\nExiting menu...\n");
-}
-
 void getReservationByNameOption()
 {
     char pszInput[READ_INPUT_MAX_LENGTH];
     char pszName[32];
+
+    Reservation *reservation = NULL;
 
     // Consume any pending newline characters.
     int c = getchar();
@@ -113,5 +148,58 @@ void getReservationByNameOption()
     printf("Enter the guest ");
     readInput(pszInput, "name: ", pszName, "%[^\n]", 32);
 
-    getReservationByName(pszName);
+    int iVal = getReservationByName(pszName, &reservation);
+
+    if (iVal == 0)
+    {
+        printf("Reservation found:\n\n");
+        printReservation(reservation);
+    }
+    else if (iVal == 1)
+    {
+        printf("No reservations exist.\n");
+    }
+    else if (iVal == 2)
+    {
+        printf("The guest does not have a reservation.\n");
+    }
+}
+
+void sumBookingPricesByDateOption()
+{
+    char pszInput[READ_INPUT_MAX_LENGTH];
+    int iDate;
+    int iSum;
+
+    printf("Enter ");
+
+    // Consume any pending newline characters.
+    int c = getchar();
+    while (c != '\n' && c != EOF)
+    {
+        c = getchar();
+    }
+
+    readInput(pszInput, "date: ", &iDate, "%d", READ_INPUT_MAX_LENGTH);
+
+    int iVal = sumBookingPricesByDate(iDate, &iSum);
+
+    if (iVal == 0)
+    {
+        if (iSum == 0)
+        {
+            printf("No reservations on that date.\n");
+        }
+        else
+        {
+            printf("The sum of all bookings on ");
+            printf("%d ", iDate);
+            printf("is:\n");
+            printf("%d\n", iSum);
+        }
+    }
+    else if (iVal == 1)
+    {
+        printf("No reservations exist.\n");
+    }
 }
