@@ -121,7 +121,7 @@ void addReservationOption()
     readInput(szInput, "Price per day: ", &flPricePerDay, "%f", READ_INPUT_MAX_LENGTH);
 
     addReservation(szName, szRoomNumber, iDate, iNumDays, flPricePerDay);
-
+    
     printf("\nReservation added.\n");
 }
 
