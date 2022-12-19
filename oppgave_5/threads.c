@@ -50,6 +50,9 @@ void *threadFuncA(void *arg)
 
 void *threadFuncB(void *arg)
 {
+    int iByteCounts[256];
+    memset(iByteCounts, 0, sizeof(iByteCounts));
+
     THREAD_DATA *tData = (THREAD_DATA *)arg;
 
     while (1)
@@ -68,7 +71,7 @@ void *threadFuncB(void *arg)
         // Count the number of occurrences of each byte value in the uszBuffer
         for (int i = 0; i < tData->iBufferBytes; i++)
         {
-            tData->iByteCounts[tData->uszBuffer[i]]++;
+            iByteCounts[tData->uszBuffer[i]]++;
         }
 
         // Signal Thread A that the tData has been processed
@@ -80,7 +83,7 @@ void *threadFuncB(void *arg)
     // Print the number of occurrences of each byte value
     for (int i = 0; i < 256; i++)
     {
-        printf("Byte value %02X: %d occurrences\n", i, tData->iByteCounts[i]);
+        printf("Byte value %02X: %d occurrences\n", i, iByteCounts[i]);
     }
 
     return NULL;

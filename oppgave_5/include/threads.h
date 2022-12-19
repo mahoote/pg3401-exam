@@ -7,7 +7,6 @@ typedef struct
 {
     unsigned char uszBuffer[BUF_SIZE];
     int iBufferBytes;
-    int iByteCounts[256];
     pthread_mutex_t tMutex;
     pthread_cond_t tDataAvailable;
     pthread_cond_t tDataProcessed;

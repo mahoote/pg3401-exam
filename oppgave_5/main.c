@@ -9,7 +9,6 @@ int main()
     THREAD_DATA tData;
     pthread_t threadA, threadB;
 
-    memset(tData.iByteCounts, 0, sizeof(tData.iByteCounts));
     pthread_mutex_init(&tData.tMutex, NULL);
     pthread_cond_init(&tData.tDataAvailable, NULL);
     pthread_cond_init(&tData.tDataProcessed, NULL);
