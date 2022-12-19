@@ -4,6 +4,14 @@
 
 #include "include/threads.h"
 
+/* main() -------------------------------------------
+    Revision    : 1.0.0
+
+    Comments:
+    Initializes a mutex and two condition variables to sync
+    the threads. Creates two threads and waits for them to finish.
+    Cleans up before exiting program.
+   -------------------------------------------------- */
 int main()
 {
     THREAD_DATA tData;

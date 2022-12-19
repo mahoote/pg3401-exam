@@ -12,7 +12,7 @@ typedef struct
     pthread_cond_t tDataProcessed;
 } THREAD_DATA;
 
-void *threadFuncA(void *arg);
-void *threadFuncB(void *arg);
+void *threadFuncA(void *_tData);
+void *threadFuncB(void *_tData);
 
 #endif
