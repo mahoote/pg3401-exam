@@ -15,11 +15,11 @@ Reservation *pHead = NULL;
    -------------------------------------------------- */
 void printReservation(Reservation *_pRes)
 {
-    printf("Name: %s\n", _pRes->pszName);
-    printf("Room number: %s\n", _pRes->pszRoomNumber);
+    printf("Name: %s\n", _pRes->szName);
+    printf("Room number: %s\n", _pRes->szRoomNumber);
     printf("Date: %d\n", _pRes->iDate);
     printf("Number of days: %d\n", _pRes->iNumDays);
-    printf("Price per day: %.2f\n", _pRes->bPricePerDay);
+    printf("Price per day: %.2f\n", _pRes->flPricePerDay);
     printf("\n");
 }
 
@@ -31,8 +31,8 @@ void printReservation(Reservation *_pRes)
    -------------------------------------------------- */
 void printReservationMin(Reservation *_pRes)
 {
-    printf("Name: %s\n", _pRes->pszName);
-    printf("Room number: %s\n", _pRes->pszRoomNumber);
+    printf("Name: %s\n", _pRes->szName);
+    printf("Room number: %s\n", _pRes->szRoomNumber);
     printf("Number of days: %d\n", _pRes->iNumDays);
     printf("\n");
 }
@@ -106,9 +106,9 @@ int printAllReservationsByCurrentDate()
     the new reservation will become it.
     _iDate format = YYYYMMDD.
    -------------------------------------------------- */
-void addReservation(char *_pszName, char *_pszRoomNumber, int _iDate, int _iNumDays, float _bPricePerDay)
+void addReservation(char *_pszName, char *_pszRoomNumber, int _iDate, int _iNumDays, float _flPricePerDay)
 {
-    Reservation *pNewRes = newReservation(_pszName, _pszRoomNumber, _iDate, _iNumDays, _bPricePerDay);
+    Reservation *pNewRes = newReservation(_pszName, _pszRoomNumber, _iDate, _iNumDays, _flPricePerDay);
 
     if (pHead == NULL)
     {
@@ -134,15 +134,15 @@ void addReservation(char *_pszName, char *_pszRoomNumber, int _iDate, int _iNumD
     Return a pointer to the new reservation.
     _iDate format = YYYYMMDD.
    -------------------------------------------------- */
-Reservation *newReservation(char *_pszName, char *_pszRoomNumber, int _iDate, int _iNumDays, float _bPricePerDay)
+Reservation *newReservation(char *_pszName, char *_pszRoomNumber, int _iDate, int _iNumDays, float _flPricePerDay)
 {
     Reservation *pRes = (Reservation *)malloc(sizeof(Reservation));
 
-    strcpy(pRes->pszName, _pszName);
-    strcpy(pRes->pszRoomNumber, _pszRoomNumber);
+    strcpy(pRes->szName, _pszName);
+    strcpy(pRes->szRoomNumber, _pszRoomNumber);
     pRes->iDate = _iDate;
     pRes->iNumDays = _iNumDays;
-    pRes->bPricePerDay = _bPricePerDay;
+    pRes->flPricePerDay = _flPricePerDay;
 
     pRes->pPrev = NULL;
     pRes->pNext = NULL;
@@ -275,7 +275,7 @@ int getReservationByName(char *_pszName, Reservation **_pRes)
 
     while (pCurrent != NULL)
     {
-        if (strcmp(pCurrent->pszName, _pszName) == 0)
+        if (strcmp(pCurrent->szName, _pszName) == 0)
         {
             *_pRes = pCurrent;
             return 0;
@@ -317,7 +317,7 @@ int sumBookingPricesByDate(int _iDate, int *_iSum)
 
         if (_iDate >= *iDate && _iDate <= iEndDate)
         {
-            *_iSum += pCurrent->bPricePerDay;
+            *_iSum += pCurrent->flPricePerDay;
         }
 
         pCurrent = pCurrent->pNext;
