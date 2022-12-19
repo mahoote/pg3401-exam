@@ -4,11 +4,11 @@
 /* Structs */
 typedef struct reservation
 {
-    char pszName[32];
-    char pszRoomNumber[8];
+    char szName[32];
+    char szRoomNumber[8];
     int iDate;
     int iNumDays;
-    float bPricePerDay;
+    float flPricePerDay;
 
     struct reservation *pPrev;
     struct reservation *pNext;
@@ -18,8 +18,8 @@ typedef struct reservation
 void printReservation(Reservation *_pRes);
 int printAllReservations();
 int printAllReservationsByCurrentDate();
-void addReservation(char *_pszName, char *_pszRoomNumber, int _iDate, int _iNumDays, float _bPricePerDay);
-Reservation *newReservation(char *_pszName, char *_pszRoomNumber, int _iDate, int _iNumDays, float _bPricePerDay);
+void addReservation(char *_pszName, char *_pszRoomNumber, int _iDate, int _iNumDays, float _flPricePerDay);
+Reservation *newReservation(char *_pszName, char *_pszRoomNumber, int _iDate, int _iNumDays, float _flPricePerDay);
 void deleteLastElement();
 void deleteAllReservations();
 void deleteExpiredReservations(int *_iReservationCount);

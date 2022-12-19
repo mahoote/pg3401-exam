@@ -63,9 +63,9 @@ void printAllReservationsOption()
 {
     printf("Reservations: \n\n");
 
-    int iVal = printAllReservations();
+    int iRes = printAllReservations();
 
-    if (iVal == 1)
+    if (iRes == 1)
     {
         printf("List empty.\n");
     }
@@ -78,13 +78,13 @@ void printAllReservationsByCurrentDateOption()
 {
     printf("Reservations: \n\n");
 
-    int iVal = printAllReservationsByCurrentDate();
+    int iRes = printAllReservationsByCurrentDate();
 
-    if (iVal == 1)
+    if (iRes == 1)
     {
         printf("List empty.\n");
     }
-    else if (iVal == 2)
+    else if (iRes == 2)
     {
         printf("No reservations today.\n");
     }
@@ -98,12 +98,12 @@ void printAllReservationsByCurrentDateOption()
    -------------------------------------------------- */
 void addReservationOption()
 {
-    char pszInput[READ_INPUT_MAX_LENGTH];
-    char pszName[32];
-    char pszRoomNumber[8];
+    char szInput[READ_INPUT_MAX_LENGTH];
+    char szName[32];
+    char szRoomNumber[8];
     int iDate;
     int iNumDays;
-    float bPricePerDay;
+    float flPricePerDay;
 
     printf("Enter the following information:\n");
 
@@ -114,14 +114,14 @@ void addReservationOption()
         c = getchar();
     }
 
-    readInput(pszInput, "Name: ", pszName, "%[^\n]", 32);
-    readInput(pszInput, "Room number: ", pszRoomNumber, "%[^\n]", 8);
-    readInput(pszInput, "Date: ", &iDate, "%d", READ_INPUT_MAX_LENGTH);
-    readInput(pszInput, "Number of days: ", &iNumDays, "%d", READ_INPUT_MAX_LENGTH);
-    readInput(pszInput, "Price per day: ", &bPricePerDay, "%f", READ_INPUT_MAX_LENGTH);
+    readInput(szInput, "Name: ", szName, "%[^\n]", 32);
+    readInput(szInput, "Room number: ", szRoomNumber, "%[^\n]", 8);
+    readInput(szInput, "Date: ", &iDate, "%d", READ_INPUT_MAX_LENGTH);
+    readInput(szInput, "Number of days: ", &iNumDays, "%d", READ_INPUT_MAX_LENGTH);
+    readInput(szInput, "Price per day: ", &flPricePerDay, "%f", READ_INPUT_MAX_LENGTH);
 
-    addReservation(pszName, pszRoomNumber, iDate, iNumDays, bPricePerDay);
-
+    addReservation(szName, szRoomNumber, iDate, iNumDays, flPricePerDay);
+    
     printf("\nReservation added.\n");
 }
 
@@ -153,8 +153,8 @@ void deleteExpiredReservationsOption()
    -------------------------------------------------- */
 void getReservationByNameOption()
 {
-    char pszInput[READ_INPUT_MAX_LENGTH];
-    char pszName[32];
+    char szInput[READ_INPUT_MAX_LENGTH];
+    char szName[32];
 
     Reservation *reservation = NULL;
 
@@ -166,20 +166,20 @@ void getReservationByNameOption()
     }
 
     printf("Enter the guest ");
-    readInput(pszInput, "name: ", pszName, "%[^\n]", 32);
+    readInput(szInput, "name: ", szName, "%[^\n]", 32);
 
-    int iVal = getReservationByName(pszName, &reservation);
+    int iRes = getReservationByName(szName, &reservation);
 
-    if (iVal == 0)
+    if (iRes == 0)
     {
         printf("Reservation found:\n\n");
         printReservation(reservation);
     }
-    else if (iVal == 1)
+    else if (iRes == 1)
     {
         printf("No reservations exist.\n");
     }
-    else if (iVal == 2)
+    else if (iRes == 2)
     {
         printf("The guest does not have a reservation.\n");
     }
@@ -187,7 +187,7 @@ void getReservationByNameOption()
 
 void sumBookingPricesByDateOption()
 {
-    char pszInput[READ_INPUT_MAX_LENGTH];
+    char szInput[READ_INPUT_MAX_LENGTH];
     int iDate;
     int iSum;
 
@@ -200,11 +200,11 @@ void sumBookingPricesByDateOption()
         c = getchar();
     }
 
-    readInput(pszInput, "date: ", &iDate, "%d", READ_INPUT_MAX_LENGTH);
+    readInput(szInput, "date: ", &iDate, "%d", READ_INPUT_MAX_LENGTH);
 
-    int iVal = sumBookingPricesByDate(iDate, &iSum);
+    int iRes = sumBookingPricesByDate(iDate, &iSum);
 
-    if (iVal == 0)
+    if (iRes == 0)
     {
         if (iSum == 0)
         {
@@ -218,7 +218,7 @@ void sumBookingPricesByDateOption()
             printf("%d\n", iSum);
         }
     }
-    else if (iVal == 1)
+    else if (iRes == 1)
     {
         printf("No reservations exist.\n");
     }
