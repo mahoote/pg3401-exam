@@ -61,11 +61,11 @@ int main(int argc, char *argv[])
     // Check for the correct number of arguments
     if (argc != 2)
     {
-        fprintf(stderr, "Usage: webclient <url>\n");
+        fprintf(stderr, "Usage: webclient <UrlPath>\n");
         exit(1);
     }
 
-    char *pszPath = argv[1];
+    char *pszUrlPath = argv[1];
 
     pHostnm = gethostbyname(pszHostName);
     ushPort = atoi("80");
@@ -101,7 +101,7 @@ int main(int argc, char *argv[])
 
     // Send a GET request to the server
     char request[256];
-    sprintf(request, "GET %s HTTP/1.1\r\nHost: %s\r\n\r\n", pszPath, pszHostName);
+    sprintf(request, "GET %s HTTP/1.1\r\nHost: %s\r\n\r\n", pszUrlPath, pszHostName);
     if (send(iSockfd, request, strlen(request), 0) < 0)
     {
         perror("Error sending request");
