@@ -7,31 +7,9 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 
-#define BUFFER_SIZE 1024
+#include "include/contentType.h"
 
-char *getContentType(char *pszFilePath)
-{
-    if (strstr(pszFilePath, ".html") != NULL)
-    {
-        return "text/html";
-    }
-    else if (strstr(pszFilePath, ".jpg") != NULL)
-    {
-        return "image/jpeg";
-    }
-    else if (strstr(pszFilePath, ".png") != NULL)
-    {
-        return "image/png";
-    }
-    else if (strstr(pszFilePath, ".gif") != NULL)
-    {
-        return "image/gif";
-    }
-    else
-    {
-        return "text/plain";
-    }
-}
+#define BUF_SIZE 1024
 
 int main(int argc, char *argv[])
 {
@@ -84,8 +62,8 @@ int main(int argc, char *argv[])
         }
 
         // Read the incoming GET request
-        char szBuffer[BUFFER_SIZE];
-        int iRecvStatus = recv(iClientAccept, szBuffer, BUFFER_SIZE - 1, 0);
+        char szBuffer[BUF_SIZE];
+        int iRecvStatus = recv(iClientAccept, szBuffer, BUF_SIZE - 1, 0);
 
         if (iRecvStatus < 0)
         {
@@ -138,9 +116,9 @@ int main(int argc, char *argv[])
             send(iClientAccept, szHeader, strlen(szHeader), 0);
 
             // Send the contents of the file
-            char szDataBuffer[BUFFER_SIZE];
+            char szDataBuffer[BUF_SIZE];
             size_t iNumBytesRead;
-            while ((iNumBytesRead = fread(szDataBuffer, 1, BUFFER_SIZE, pFile)) > 0)
+            while ((iNumBytesRead = fread(szDataBuffer, 1, BUF_SIZE, pFile)) > 0)
             {
                 send(iClientAccept, szDataBuffer, iNumBytesRead, 0);
             }
