@@ -84,6 +84,10 @@ int main(int argc, char *argv[])
         }
         else
         {
+            // Send the header to the client
+            char header[] = "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\n\r\n";
+            send(client_socket, header, strlen(header), 0);
+
             // Send the contents of the file as the response
             char response[BUFFER_SIZE];
             while (fgets(response, BUFFER_SIZE, file) != NULL)
