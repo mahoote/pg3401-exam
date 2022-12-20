@@ -2,4 +2,4 @@
 
 clear
 make
-./oppgave6_client info.cern.ch/hypertext/WWW/Bibliography.html 80
+./oppgave6_client /pg3401/test.html

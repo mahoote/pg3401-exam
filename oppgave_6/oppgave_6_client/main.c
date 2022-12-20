@@ -5,10 +5,9 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
-#include <arpa/inet.h>
-#include <netdb.h> // Is required for sockaddr_in
+#include <netdb.h>
 
-#define BUF_SIZE 1024
+#include "include/main.h"
 
 /* splitString() ------------------------------------
     Revision    : 1.0.0
@@ -48,24 +47,21 @@ int main(int argc, char *argv[])
     unsigned short ushPort;
     struct hostent *pHostnm;
     struct sockaddr_in saAddr = {0};
+    char *pszHostName = "www.eastwillsecurity.com";
 
     // Check for the correct number of arguments
-    if (argc != 3)
+    if (argc != 2)
     {
-        fprintf(stderr, "Usage: webclient <url> <port>\n");
+        fprintf(stderr, "Usage: webclient <url>\n");
         exit(1);
     }
 
-    char *pszUrl = argv[1];
+    char *pszPath = argv[1];
 
-    // The path will be everything after the delimiter.
-    char *pszPath = pszUrl;
-    char *pszHostName = splitString(&pszPath, "/");
-
-    // Parse the server IP and port from the command line arguments
     pHostnm = gethostbyname(pszHostName);
-    ushPort = atoi(argv[2]);
+    ushPort = atoi("80");
 
+    // Checks for NULL pointer.
     if (pHostnm == (struct hostent *)0)
     {
         fprintf(stderr, "Error getting host name!\n");
@@ -82,6 +78,7 @@ int main(int argc, char *argv[])
 
     // Set up the server address
     memset(&saAddr, 0, sizeof(saAddr));
+
     saAddr.sin_family = AF_INET;
     saAddr.sin_port = htons(ushPort);
     saAddr.sin_addr.s_addr = *((unsigned long *)pHostnm->h_addr_list[0]);
@@ -95,7 +92,7 @@ int main(int argc, char *argv[])
 
     // Send a GET request to the server
     char request[256];
-    sprintf(request, "GET /%s HTTP/1.1\r\nHost: %s\r\n\r\n", pszPath, pszHostName);
+    sprintf(request, "GET %s HTTP/1.1\r\nHost: %s\r\n\r\n", pszPath, pszHostName);
     if (send(iSockfd, request, strlen(request), 0) < 0)
     {
         perror("Error sending request");
@@ -120,7 +117,8 @@ int main(int argc, char *argv[])
             exit(1);
         }
 
-        // The body will be everything after the delimiter.
+        // Either print the whole response or split the header and body
+        // if the delimiter occurs.
         char *body = response;
         char *header = splitString(&body, "\r\n\r\n");
 
@@ -131,22 +129,19 @@ int main(int argc, char *argv[])
         else
         {
             // Print the header and body
-            printf("%s", header);
-            printf("\n------------------------------\n\n");
+            printf("%s\n\n", header);
             printf("%s", body);
 
             free(header);
         }
 
-        // printf("%s", szBuffer);
         bzero(response, sizeof(response));
+
     } while (iRecvStatus != 0);
 
     printf("\n");
 
-    // Clean up
     close(iSockfd);
-    free(pszHostName);
 
     return 0;
 }
