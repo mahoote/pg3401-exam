@@ -6,6 +6,7 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <netdb.h>
+#include <ctype.h>
 
 #include "include/client.h"
 
@@ -112,6 +113,15 @@ int main(int argc, char *argv[])
     char szResponse[BUF_SIZE];
     int iRecvStatus;
 
+    FILE *pResponseFile = fopen("response.txt", "w");
+    if (pResponseFile == NULL)
+    {
+        perror("Error opening file");
+        exit(1);
+    }
+
+    char *pszHeaderFieldValue;
+
     do
     {
         // Reading blocks of the response by the size of the buffer.
@@ -132,6 +142,7 @@ int main(int argc, char *argv[])
         if (header == NULL)
         {
             printf("%s", szResponse);
+            fprintf(pResponseFile, "%s", szResponse);
         }
         else
         {
@@ -139,7 +150,31 @@ int main(int argc, char *argv[])
             printf("%s\n\n", header);
             printf("%s", body);
 
+            fprintf(pResponseFile, "%s", body);
+
             free(header);
+        }
+
+        char szContentType[16];
+
+        pszHeaderFieldValue = strstr(szResponse, "Content-Type");
+        if (pszHeaderFieldValue)
+        {
+            pszHeaderFieldValue += strlen("Content-Type: ");
+
+            while (!isalpha(*pszHeaderFieldValue))
+            {
+                pszHeaderFieldValue++;
+            }
+
+            char *pszEndOfLine = strstr(pszHeaderFieldValue, "\n");
+            if (pszEndOfLine)
+            {
+                strncpy(szContentType, pszHeaderFieldValue, pszEndOfLine - pszHeaderFieldValue);
+                szContentType[pszEndOfLine - pszHeaderFieldValue] = '\0';
+            }
+
+            printf("--Content-Type: %s\n", szContentType);
         }
 
         bzero(szResponse, sizeof(szResponse));
@@ -148,6 +183,7 @@ int main(int argc, char *argv[])
 
     printf("\n");
 
+    fclose(pResponseFile);
     close(iSockFd);
 
     return 0;

@@ -119,12 +119,17 @@ int main(int argc, char *argv[])
         }
         else
         {
+            fseek(pFile, 0L, SEEK_END);
+            int iFileSize = ftell(pFile);
+            rewind(pFile);
+
             // Set correct Content-Type.
             char *pszContentType = getContentType(pszFilePath);
 
             // Send the header to the client
             char szHeader[256];
-            sprintf(szHeader, "HTTP/1.1 200 OK\r\nContent-Type: %s\r\n\r\n", pszContentType);
+            sprintf(szHeader, "HTTP/1.1 200 OK\r\nContent-Type: %s\r\nContent-Length: %d\r\nFile-Name: %s\r\n\r\n",
+                    pszContentType, iFileSize, "index.html");
             send(iClientAccept, szHeader, strlen(szHeader), 0);
 
             // Send the contents of the file
