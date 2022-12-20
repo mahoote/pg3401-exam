@@ -56,7 +56,7 @@ int main(int argc, char *argv[])
     unsigned short ushPort;
     struct hostent *pHostnm;
     struct sockaddr_in saAddr = {0};
-    char *pszHostName = "www.eastwillsecurity.com";
+    char *pszHostName = "127.0.0.1";
 
     // Check for the correct number of arguments
     if (argc != 2)
@@ -68,7 +68,7 @@ int main(int argc, char *argv[])
     char *pszUrlPath = argv[1];
 
     pHostnm = gethostbyname(pszHostName);
-    ushPort = atoi("80");
+    ushPort = atoi("8080");
 
     // Checks for NULL pointer.
     if (pHostnm == (struct hostent *)0)
