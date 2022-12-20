@@ -41,6 +41,15 @@ char *splitString(char **_ppszOriginal, const char *_pcszDelimiter)
     return pszNewString;
 }
 
+/* main() -------------------------------------------
+    Revision    : 1.0.0
+
+    Comments:
+    Simple client that sends a HTTP GET request to a specified web server
+    and prints the server's response. Must provide URL PATH as arg.
+    Connects to the server using a socket. Reads all blocks of data sent
+    from the server. Stops reading when everything is received.
+   -------------------------------------------------- */
 int main(int argc, char *argv[])
 {
     int iSockfd;
