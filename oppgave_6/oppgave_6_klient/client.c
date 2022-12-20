@@ -52,7 +52,7 @@ char *splitString(char **_ppszOriginal, const char *_pcszDelimiter)
    -------------------------------------------------- */
 int main(int argc, char *argv[])
 {
-    int iSocketAccept;
+    int iSockFd;
     unsigned short ushPort;
     struct hostent *pHostnm;
     struct sockaddr_in srvAddr = {0};
@@ -78,8 +78,8 @@ int main(int argc, char *argv[])
     }
 
     // Create a socket
-    iSocketAccept = socket(AF_INET, SOCK_STREAM, 0);
-    if (iSocketAccept < 0)
+    iSockFd = socket(AF_INET, SOCK_STREAM, 0);
+    if (iSockFd < 0)
     {
         perror("Error creating socket");
         exit(1);
@@ -93,7 +93,7 @@ int main(int argc, char *argv[])
     srvAddr.sin_addr.s_addr = *((unsigned long *)pHostnm->h_addr_list[0]);
 
     // Connect to the server
-    if (connect(iSocketAccept, (struct sockaddr *)&srvAddr, sizeof(srvAddr)) < 0)
+    if (connect(iSockFd, (struct sockaddr *)&srvAddr, sizeof(srvAddr)) < 0)
     {
         perror("Error connecting to server");
         exit(1);
@@ -102,7 +102,7 @@ int main(int argc, char *argv[])
     // Send a GET request to the server
     char request[256];
     sprintf(request, "GET %s HTTP/1.1\r\nHost: %s\r\n\r\n", pszUrlPath, pszHostAddress);
-    if (send(iSocketAccept, request, strlen(request), 0) < 0)
+    if (send(iSockFd, request, strlen(request), 0) < 0)
     {
         perror("Error sending request");
         exit(1);
@@ -116,7 +116,7 @@ int main(int argc, char *argv[])
     {
         // Reading blocks of the response by the size of the buffer.
         // Will stop reading when all the blocks have been sent.
-        iRecvStatus = recv(iSocketAccept, szResponse, BUF_SIZE - 1, 0);
+        iRecvStatus = recv(iSockFd, szResponse, BUF_SIZE - 1, 0);
 
         if (iRecvStatus < 0)
         {
@@ -148,7 +148,7 @@ int main(int argc, char *argv[])
 
     printf("\n");
 
-    close(iSocketAccept);
+    close(iSockFd);
 
     return 0;
 }

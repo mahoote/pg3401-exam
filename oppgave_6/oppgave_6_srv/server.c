@@ -11,14 +11,14 @@
 
 int main(int argc, char *argv[])
 {
-    int iSocket;
+    int iSockFd;
     unsigned short ushPort;
     struct sockaddr_in srvAddr = {0};
     char *pszHostAddress = "127.0.0.1";
 
     // Create a socket
-    iSocket = socket(AF_INET, SOCK_STREAM, 0);
-    if (iSocket < 0)
+    iSockFd = socket(AF_INET, SOCK_STREAM, 0);
+    if (iSockFd < 0)
     {
         perror("Error creating socket");
         exit(1);
@@ -33,7 +33,7 @@ int main(int argc, char *argv[])
     srvAddr.sin_port = htons(ushPort);
     srvAddr.sin_addr.s_addr = inet_addr(pszHostAddress);
 
-    if (bind(iSocket, (struct sockaddr *)&srvAddr, sizeof(srvAddr)) < 0)
+    if (bind(iSockFd, (struct sockaddr *)&srvAddr, sizeof(srvAddr)) < 0)
     {
         perror("Error binding socket");
         exit(1);
@@ -42,13 +42,13 @@ int main(int argc, char *argv[])
     while (1)
     {
         // Listen for incoming connections
-        listen(iSocket, 5);
+        listen(iSockFd, 5);
 
         // Accept incoming connections
         struct sockaddr_in cliAddr;
         socklen_t uiCliAddrSize = sizeof(cliAddr);
 
-        int iClientAccept = accept(iSocket, (struct sockaddr *)&cliAddr, &uiCliAddrSize);
+        int iClientAccept = accept(iSockFd, (struct sockaddr *)&cliAddr, &uiCliAddrSize);
         if (iClientAccept < 0)
         {
             perror("Error accepting connection");
@@ -124,7 +124,7 @@ int main(int argc, char *argv[])
     }
 
     // Close the server socket
-    close(iSocket);
+    close(iSockFd);
 
     return 0;
 }
