@@ -1,0 +1,5 @@
+#!/bin/bash
+
+clear
+make
+./oppgave6_klient /pg3401/test.html

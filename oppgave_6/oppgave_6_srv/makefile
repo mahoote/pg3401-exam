@@ -1,6 +1,5 @@
 INCLDIR = ./include
 CC = gcc
-# -lsockets is included so no need to add it.
 CFLAGS = -O2
 CLFAGS += -I$(INCLDIR)
 
@@ -11,7 +10,6 @@ _DEPS = main.h
 DEPS = $(patsubst %,$(INCLDIR)/%, $(_DEPS))
 
 # List all source files here, but give .o file convention.
-# _OBJS = main.o webclient.o
 _OBJS = main.o
 OBJS = $(patsubst %,$(OBJDIR)/%, $(_OBJS))
 
@@ -19,7 +17,7 @@ $(OBJDIR)/%.o: %.c $(DEPS)
 	$(CC) -c -o $@ $< $(CFLAGS)
 
 # Output file name.
-oppgave6_client: $(OBJS)
+oppgave6_srv: $(OBJS)
 	gcc -o $@ $^ $(CFLAGS)
 
 .PHONY: clean
