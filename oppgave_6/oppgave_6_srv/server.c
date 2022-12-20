@@ -11,6 +11,18 @@
 
 #define BUF_SIZE 1024
 
+/* main() -------------------------------------------
+    Revision    : 1.0.0
+
+    Comments:
+    Simple HTTP server. When run, it will bind to the
+    IP address "127.0.0.1" (localhost) and the port number 8080, and listen
+    for incoming connections. When a client connects to the server, it
+    will read the client's HTTP GET request, parse it to extract the requested
+    file path, open the file, and send the file's contents back to the client
+    along with an HTTP response header. If the file cannot be opened, the server
+    will send an HTTP response indicating that the requested file was not found.
+   -------------------------------------------------- */
 int main(int argc, char *argv[])
 {
     int iSockFd;

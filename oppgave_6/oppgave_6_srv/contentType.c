@@ -2,6 +2,12 @@
 
 #include "include/contentType.h"
 
+/* getContentType() ---------------------------------
+    Revision    : 1.0.0
+
+    Comments:
+    Returns the correct Content-Type based on the filepath.
+   -------------------------------------------------- */
 char *getContentType(char *pszFilePath)
 {
     if (strstr(pszFilePath, ".html") != NULL)
