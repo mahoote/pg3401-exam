@@ -15,9 +15,8 @@ int main(int argc, char *argv[])
     unsigned short ushPort;
     struct sockaddr_in srvAddr = {0};
     char *pszHostAddress = "127.0.0.1";
-    ushPort = atoi("8080");
 
-    printf("Server startet at http://%s:%d\n", pszHostAddress, ushPort);
+    ushPort = atoi("8080");
 
     // Create a socket
     iSockFd = socket(AF_INET, SOCK_STREAM, 0);
@@ -39,6 +38,10 @@ int main(int argc, char *argv[])
         perror("Error binding socket");
         exit(1);
     }
+
+    // Print hyperlink to server.
+    printf("Server startet at \033]8;;http://%s:%d\033\\http://%s:%d\033]8;;\033\\\n",
+           pszHostAddress, ushPort, pszHostAddress, ushPort);
 
     while (1)
     {
@@ -82,6 +85,13 @@ int main(int argc, char *argv[])
             if (pszEndOfPath != NULL)
             {
                 *pszEndOfPath = '\0';
+            }
+
+            // Redirect to index page if path is empty.
+            if (strcmp(pszFilePath, "") == 0)
+            {
+                memset(pszFilePath, '\0', sizeof(pszFilePath));
+                strcpy(pszFilePath, "public/index.html");
             }
         }
 
