@@ -9,6 +9,30 @@
 
 #define BUFFER_SIZE 1024
 
+char *getContentType(char *pszFilePath)
+{
+    if (strstr(pszFilePath, ".html") != NULL)
+    {
+        return "text/html";
+    }
+    else if (strstr(pszFilePath, ".jpg") != NULL)
+    {
+        return "image/jpeg";
+    }
+    else if (strstr(pszFilePath, ".png") != NULL)
+    {
+        return "image/png";
+    }
+    else if (strstr(pszFilePath, ".gif") != NULL)
+    {
+        return "image/gif";
+    }
+    else
+    {
+        return "text/plain";
+    }
+}
+
 int main(int argc, char *argv[])
 {
     int iSockFd;
@@ -106,24 +130,19 @@ int main(int argc, char *argv[])
         else
         {
             // Set correct Content-Type.
-            char szContentType[15] = "text/plain";
-
-            if (strstr(pszFilePath, ".html") != NULL)
-            {
-                memset(szContentType, '\0', sizeof(szContentType));
-                strcpy(szContentType, "text/html");
-            }
+            char *pszContentType = getContentType(pszFilePath);
 
             // Send the header to the client
             char szHeader[256];
-            sprintf(szHeader, "HTTP/1.1 200 OK\r\nContent-Type: %s\r\n\r\n", szContentType);
+            sprintf(szHeader, "HTTP/1.1 200 OK\r\nContent-Type: %s\r\n\r\n", pszContentType);
             send(iClientAccept, szHeader, strlen(szHeader), 0);
 
-            // Send the contents of the file as the response
-            char szResponse[BUFFER_SIZE];
-            while (fgets(szResponse, BUFFER_SIZE, pFile) != NULL)
+            // Send the contents of the file
+            char szDataBuffer[BUFFER_SIZE];
+            size_t iNumBytesRead;
+            while ((iNumBytesRead = fread(szDataBuffer, 1, BUFFER_SIZE, pFile)) > 0)
             {
-                send(iClientAccept, szResponse, strlen(szResponse), 0);
+                send(iClientAccept, szDataBuffer, iNumBytesRead, 0);
             }
 
             // Close the file
