@@ -11,21 +11,29 @@
 
 int main(int argc, char *argv[])
 {
+    int iSocket;
+    unsigned short ushPort;
+    struct sockaddr_in srvAddr = {0};
+    char *pszHostAddress = "127.0.0.1";
+
     // Create a socket
-    int server_socket = socket(AF_INET, SOCK_STREAM, 0);
-    if (server_socket < 0)
+    iSocket = socket(AF_INET, SOCK_STREAM, 0);
+    if (iSocket < 0)
     {
         perror("Error creating socket");
         exit(1);
     }
 
-    // Bind the socket to an address and port
-    struct sockaddr_in server_address;
-    memset(&server_address, 0, sizeof(server_address));
-    server_address.sin_family = AF_INET;
-    server_address.sin_addr.s_addr = inet_addr("127.0.0.1");
-    server_address.sin_port = htons(8080);
-    if (bind(server_socket, (struct sockaddr *)&server_address, sizeof(server_address)) < 0)
+    ushPort = atoi("8080");
+
+    // Bind the socket
+    memset(&srvAddr, 0, sizeof(srvAddr));
+
+    srvAddr.sin_family = AF_INET;
+    srvAddr.sin_port = htons(ushPort);
+    srvAddr.sin_addr.s_addr = inet_addr(pszHostAddress);
+
+    if (bind(iSocket, (struct sockaddr *)&srvAddr, sizeof(srvAddr)) < 0)
     {
         perror("Error binding socket");
         exit(1);
@@ -34,77 +42,89 @@ int main(int argc, char *argv[])
     while (1)
     {
         // Listen for incoming connections
-        listen(server_socket, 5);
+        listen(iSocket, 5);
 
         // Accept incoming connections
-        struct sockaddr_in client_address;
-        socklen_t client_address_size = sizeof(client_address);
-        int client_socket = accept(server_socket, (struct sockaddr *)&client_address, &client_address_size);
-        if (client_socket < 0)
+        struct sockaddr_in cliAddr;
+        socklen_t uiCliAddrSize = sizeof(cliAddr);
+
+        int iClientAccept = accept(iSocket, (struct sockaddr *)&cliAddr, &uiCliAddrSize);
+        if (iClientAccept < 0)
         {
             perror("Error accepting connection");
             exit(1);
         }
 
         // Read the incoming GET request
-        char buffer[BUFFER_SIZE];
-        int bytes_received = recv(client_socket, buffer, BUFFER_SIZE - 1, 0);
-        if (bytes_received < 0)
+        char szBuffer[BUFFER_SIZE];
+        int iRecvStatus = recv(iClientAccept, szBuffer, BUFFER_SIZE - 1, 0);
+
+        if (iRecvStatus < 0)
         {
             perror("Error reading from socket");
             exit(1);
         }
-        buffer[bytes_received] = '\0';
+        szBuffer[iRecvStatus] = '\0';
 
         // Parse the GET request to extract the file path
-        char *file_path = NULL;
-        if (strncmp(buffer, "GET ", 4) == 0)
+        char *pszFilePath = NULL;
+        if (strncmp(szBuffer, "GET ", 4) == 0)
         {
             // Check if the path starts with a '/' and remove it.
-            file_path = buffer + 4;
-            if (file_path[0] == '/')
+            pszFilePath = szBuffer + 4;
+            if (pszFilePath[0] == '/')
             {
-                file_path++;
+                pszFilePath++;
             }
 
-            char *end_of_path = strchr(file_path, ' ');
-            if (end_of_path != NULL)
+            char *pszEndOfPath = strchr(pszFilePath, ' ');
+            if (pszEndOfPath != NULL)
             {
-                *end_of_path = '\0';
+                *pszEndOfPath = '\0';
             }
         }
 
-        printf("%s\n", file_path);
+        printf("GET /%s\n", pszFilePath);
 
         // Open the requested file
-        FILE *file = fopen(file_path, "r");
-        if (file == NULL)
+        FILE *pFile = fopen(pszFilePath, "r");
+        if (pFile == NULL)
         {
             perror("Error opening file");
         }
         else
         {
+            // Set correct Content-Type.
+            char szContentType[15] = "text/plain";
+
+            if (strstr(pszFilePath, ".html") != NULL)
+            {
+                memset(szContentType, '\0', sizeof(szContentType));
+                strcpy(szContentType, "text/html");
+            }
+
             // Send the header to the client
-            char header[] = "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\n\r\n";
-            send(client_socket, header, strlen(header), 0);
+            char szHeader[256];
+            sprintf(szHeader, "HTTP/1.1 200 OK\r\nContent-Type: %s\r\n\r\n", szContentType);
+            send(iClientAccept, szHeader, strlen(szHeader), 0);
 
             // Send the contents of the file as the response
-            char response[BUFFER_SIZE];
-            while (fgets(response, BUFFER_SIZE, file) != NULL)
+            char szResponse[BUFFER_SIZE];
+            while (fgets(szResponse, BUFFER_SIZE, pFile) != NULL)
             {
-                send(client_socket, response, strlen(response), 0);
+                send(iClientAccept, szResponse, strlen(szResponse), 0);
             }
 
             // Close the file
-            fclose(file);
+            fclose(pFile);
         }
 
         // Close the client socket
-        close(client_socket);
+        close(iClientAccept);
     }
 
     // Close the server socket
-    close(server_socket);
+    close(iSocket);
 
     return 0;
 }

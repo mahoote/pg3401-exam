@@ -52,11 +52,11 @@ char *splitString(char **_ppszOriginal, const char *_pcszDelimiter)
    -------------------------------------------------- */
 int main(int argc, char *argv[])
 {
-    int iSockfd;
+    int iSocketAccept;
     unsigned short ushPort;
     struct hostent *pHostnm;
-    struct sockaddr_in saAddr = {0};
-    char *pszHostName = "127.0.0.1";
+    struct sockaddr_in srvAddr = {0};
+    char *pszHostAddress = "127.0.0.1";
 
     // Check for the correct number of arguments
     if (argc != 2)
@@ -67,7 +67,7 @@ int main(int argc, char *argv[])
 
     char *pszUrlPath = argv[1];
 
-    pHostnm = gethostbyname(pszHostName);
+    pHostnm = gethostbyname(pszHostAddress);
     ushPort = atoi("8080");
 
     // Checks for NULL pointer.
@@ -78,22 +78,22 @@ int main(int argc, char *argv[])
     }
 
     // Create a socket
-    iSockfd = socket(AF_INET, SOCK_STREAM, 0);
-    if (iSockfd < 0)
+    iSocketAccept = socket(AF_INET, SOCK_STREAM, 0);
+    if (iSocketAccept < 0)
     {
         perror("Error creating socket");
         exit(1);
     }
 
     // Set up the server address
-    memset(&saAddr, 0, sizeof(saAddr));
+    memset(&srvAddr, 0, sizeof(srvAddr));
 
-    saAddr.sin_family = AF_INET;
-    saAddr.sin_port = htons(ushPort);
-    saAddr.sin_addr.s_addr = *((unsigned long *)pHostnm->h_addr_list[0]);
+    srvAddr.sin_family = AF_INET;
+    srvAddr.sin_port = htons(ushPort);
+    srvAddr.sin_addr.s_addr = *((unsigned long *)pHostnm->h_addr_list[0]);
 
     // Connect to the server
-    if (connect(iSockfd, (struct sockaddr *)&saAddr, sizeof(saAddr)) < 0)
+    if (connect(iSocketAccept, (struct sockaddr *)&srvAddr, sizeof(srvAddr)) < 0)
     {
         perror("Error connecting to server");
         exit(1);
@@ -101,24 +101,22 @@ int main(int argc, char *argv[])
 
     // Send a GET request to the server
     char request[256];
-    sprintf(request, "GET %s HTTP/1.1\r\nHost: %s\r\n\r\n", pszUrlPath, pszHostName);
-    if (send(iSockfd, request, strlen(request), 0) < 0)
+    sprintf(request, "GET %s HTTP/1.1\r\nHost: %s\r\n\r\n", pszUrlPath, pszHostAddress);
+    if (send(iSocketAccept, request, strlen(request), 0) < 0)
     {
         perror("Error sending request");
         exit(1);
     }
 
     // Wait for the response from the server
-    char response[BUF_SIZE];
-    memset(response, 0, BUF_SIZE);
-
+    char szResponse[BUF_SIZE];
     int iRecvStatus;
 
     do
     {
         // Reading blocks of the response by the size of the buffer.
         // Will stop reading when all the blocks have been sent.
-        iRecvStatus = recv(iSockfd, response, BUF_SIZE - 1, 0);
+        iRecvStatus = recv(iSocketAccept, szResponse, BUF_SIZE - 1, 0);
 
         if (iRecvStatus < 0)
         {
@@ -128,12 +126,12 @@ int main(int argc, char *argv[])
 
         // Either print the whole response or split the header and body
         // if the delimiter occurs.
-        char *body = response;
+        char *body = szResponse;
         char *header = splitString(&body, "\r\n\r\n");
 
         if (header == NULL)
         {
-            printf("%s", response);
+            printf("%s", szResponse);
         }
         else
         {
@@ -144,13 +142,13 @@ int main(int argc, char *argv[])
             free(header);
         }
 
-        bzero(response, sizeof(response));
+        bzero(szResponse, sizeof(szResponse));
 
     } while (iRecvStatus != 0);
 
     printf("\n");
 
-    close(iSockfd);
+    close(iSocketAccept);
 
     return 0;
 }
