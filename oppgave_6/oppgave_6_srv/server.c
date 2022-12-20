@@ -60,7 +60,13 @@ int main(int argc, char *argv[])
         char *file_path = NULL;
         if (strncmp(buffer, "GET ", 4) == 0)
         {
+            // Check if the path starts with a '/' and remove it.
             file_path = buffer + 4;
+            if (file_path[0] == '/')
+            {
+                file_path++;
+            }
+
             char *end_of_path = strchr(file_path, ' ');
             if (end_of_path != NULL)
             {

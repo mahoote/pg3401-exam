@@ -7,7 +7,7 @@
 #include <netinet/in.h>
 #include <netdb.h>
 
-#include "include/main.h"
+#include "include/client.h"
 
 /* splitString() ------------------------------------
     Revision    : 1.0.0
