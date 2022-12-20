@@ -8,7 +8,7 @@
 #include <arpa/inet.h>
 #include <netdb.h> // Is required for sockaddr_in
 
-#define BUFFER_SIZE 1024
+#define BUF_SIZE 1024
 
 /* splitString() ------------------------------------
     Revision    : 1.0.0
@@ -24,8 +24,7 @@ char *splitString(char **_ppszOriginal, const char *_pcszDelimiter)
     char *pszDelimPos = strstr(*_ppszOriginal, _pcszDelimiter);
     if (pszDelimPos == NULL)
     {
-        fprintf(stderr, "Error parsing response: no end of string found\n");
-        exit(1);
+        return NULL;
     }
 
     size_t uiLength = pszDelimPos - *_ppszOriginal;
@@ -58,7 +57,10 @@ int main(int argc, char *argv[])
     }
 
     char *pszUrl = argv[1];
-    char *pszHostName = splitString(&pszUrl, "/");
+
+    // The path will be everything after the delimiter.
+    char *pszPath = pszUrl;
+    char *pszHostName = splitString(&pszPath, "/");
 
     // Parse the server IP and port from the command line arguments
     pHostnm = gethostbyname(pszHostName);
@@ -66,7 +68,7 @@ int main(int argc, char *argv[])
 
     if (pHostnm == (struct hostent *)0)
     {
-        perror("Error getting host name!");
+        fprintf(stderr, "Error getting host name!\n");
         exit(1);
     }
 
@@ -93,7 +95,7 @@ int main(int argc, char *argv[])
 
     // Send a GET request to the server
     char request[256];
-    sprintf(request, "GET /%s HTTP/1.1\r\nHost: %s\r\n\r\n", pszUrl, pszHostName);
+    sprintf(request, "GET /%s HTTP/1.1\r\nHost: %s\r\n\r\n", pszPath, pszHostName);
     if (send(iSockfd, request, strlen(request), 0) < 0)
     {
         perror("Error sending request");
@@ -101,34 +103,50 @@ int main(int argc, char *argv[])
     }
 
     // Wait for the response from the server
-    char *response = malloc(sizeof(char) * BUFFER_SIZE);
-    memset(response, 0, BUFFER_SIZE);
-    int bytes_received = recv(iSockfd, response, BUFFER_SIZE - 1, 0);
-    if (bytes_received < 0)
+    char response[BUF_SIZE];
+    memset(response, 0, BUF_SIZE);
+
+    int iRecvStatus;
+
+    do
     {
-        perror("Error receiving response");
-        exit(1);
-    }
+        // Reading blocks of the response by the size of the buffer.
+        // Will stop reading when all the blocks have been sent.
+        iRecvStatus = recv(iSockfd, response, BUF_SIZE - 1, 0);
 
-    // Find the end of the header
-    char *header_end = strstr(response, "\r\n\r\n");
-    if (header_end == NULL)
-    {
-        perror("Error parsing response: no end of header found");
-        exit(1);
-    }
+        if (iRecvStatus < 0)
+        {
+            perror("Error receiving response");
+            exit(1);
+        }
 
-    char *header = splitString(&response, "\r\n\r\n");
+        // The body will be everything after the delimiter.
+        char *body = response;
+        char *header = splitString(&body, "\r\n\r\n");
 
-    // Print the header and body
-    printf("Header:\n%s\n", header);
-    printf("\n------------------------------\n\n");
-    printf("Body:\n%s\n", response);
+        if (header == NULL)
+        {
+            printf("%s", response);
+        }
+        else
+        {
+            // Print the header and body
+            printf("%s", header);
+            printf("\n------------------------------\n\n");
+            printf("%s", body);
+
+            free(header);
+        }
+
+        // printf("%s", szBuffer);
+        bzero(response, sizeof(response));
+    } while (iRecvStatus != 0);
+
+    printf("\n");
 
     // Clean up
     close(iSockfd);
-    free(response);
-    free(pszUrl);
+    free(pszHostName);
 
     return 0;
 }
