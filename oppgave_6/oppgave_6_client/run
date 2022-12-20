@@ -1,5 +1,0 @@
-#!/bin/bash
-
-clear
-make
-./oppgave6_client www.eastwillsecurity.com/pg3401/test.html 80
