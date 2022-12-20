@@ -15,6 +15,9 @@ int main(int argc, char *argv[])
     unsigned short ushPort;
     struct sockaddr_in srvAddr = {0};
     char *pszHostAddress = "127.0.0.1";
+    ushPort = atoi("8080");
+
+    printf("Server startet at http://%s:%d\n", pszHostAddress, ushPort);
 
     // Create a socket
     iSockFd = socket(AF_INET, SOCK_STREAM, 0);
@@ -23,8 +26,6 @@ int main(int argc, char *argv[])
         perror("Error creating socket");
         exit(1);
     }
-
-    ushPort = atoi("8080");
 
     // Bind the socket
     memset(&srvAddr, 0, sizeof(srvAddr));
