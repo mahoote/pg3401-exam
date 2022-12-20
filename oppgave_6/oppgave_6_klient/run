@@ -2,4 +2,4 @@
 
 clear
 make
-./oppgave6_klient include/main.h
+./oppgave6_klient /public/index.html
