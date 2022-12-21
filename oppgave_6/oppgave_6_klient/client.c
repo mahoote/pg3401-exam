@@ -42,6 +42,30 @@ char *splitString(char **_ppszOriginal, const char *_pcszDelimiter)
     return pszNewString;
 }
 
+// void getHeaderFields() {
+//     char szContentType[16];
+
+//         pszHeaderFieldValue = strstr(szResponse, "Content-Type");
+//         if (pszHeaderFieldValue)
+//         {
+//             pszHeaderFieldValue += strlen("Content-Type: ");
+
+//             while (!isalpha(*pszHeaderFieldValue))
+//             {
+//                 pszHeaderFieldValue++;
+//             }
+
+//             char *pszEndOfLine = strstr(pszHeaderFieldValue, "\n");
+//             if (pszEndOfLine)
+//             {
+//                 strncpy(szContentType, pszHeaderFieldValue, pszEndOfLine - pszHeaderFieldValue);
+//                 szContentType[pszEndOfLine - pszHeaderFieldValue] = '\0';
+//             }
+
+//             printf("--Content-Type: %s\n", szContentType);
+//         }
+// }
+
 /* main() -------------------------------------------
     Revision    : 1.0.0
 
@@ -113,14 +137,16 @@ int main(int argc, char *argv[])
     char szResponse[BUF_SIZE];
     int iRecvStatus;
 
+    char *pszHeader = NULL;
+
+    int iContentLength = 0;
+
     FILE *pResponseFile = fopen("response.txt", "w");
     if (pResponseFile == NULL)
     {
         perror("Error opening file");
         exit(1);
     }
-
-    char *pszHeaderFieldValue;
 
     do
     {
@@ -136,52 +162,60 @@ int main(int argc, char *argv[])
 
         // Either print the whole response or split the header and body
         // if the delimiter occurs.
-        char *body = szResponse;
-        char *header = splitString(&body, "\r\n\r\n");
+        char *pszBody = szResponse;
 
-        if (header == NULL)
+        if (pszHeader == NULL)
         {
-            printf("%s", szResponse);
-            fprintf(pResponseFile, "%s", szResponse);
+            pszHeader = splitString(&pszBody, "\r\n\r\n");
+
+            printf("%s\n\n", pszHeader);
         }
-        else
+        if (pszHeader != NULL)
         {
-            // Print the header and body
-            printf("%s\n\n", header);
-            printf("%s", body);
-
-            fprintf(pResponseFile, "%s", body);
-
-            free(header);
-        }
-
-        char szContentType[16];
-
-        pszHeaderFieldValue = strstr(szResponse, "Content-Type");
-        if (pszHeaderFieldValue)
-        {
-            pszHeaderFieldValue += strlen("Content-Type: ");
-
-            while (!isalpha(*pszHeaderFieldValue))
-            {
-                pszHeaderFieldValue++;
-            }
-
-            char *pszEndOfLine = strstr(pszHeaderFieldValue, "\n");
-            if (pszEndOfLine)
-            {
-                strncpy(szContentType, pszHeaderFieldValue, pszEndOfLine - pszHeaderFieldValue);
-                szContentType[pszEndOfLine - pszHeaderFieldValue] = '\0';
-            }
-
-            printf("--Content-Type: %s\n", szContentType);
+            printf("%s", pszBody);
+            fprintf(pResponseFile, "%s", pszBody);
         }
 
         bzero(szResponse, sizeof(szResponse));
 
     } while (iRecvStatus != 0);
 
+    char szFileName[256];
+
+    char *pszHeaderFieldValue = strstr(pszHeader, "File-Name");
+    if (pszHeaderFieldValue)
+    {
+        // Optimized
+        pszHeaderFieldValue += strlen("File-Name: ");
+
+        while (!isalpha(*pszHeaderFieldValue))
+        {
+            pszHeaderFieldValue++;
+        }
+
+        // Fixed
+        char *pszEndOfLine = strstr(pszHeaderFieldValue, "\r\n");
+        if (pszEndOfLine)
+        {
+            strncpy(szFileName, pszHeaderFieldValue, pszEndOfLine - pszHeaderFieldValue);
+            szFileName[pszEndOfLine - pszHeaderFieldValue] = '\0';
+        }
+        else
+        {
+            strcpy(szFileName, pszHeaderFieldValue);
+        }
+    }
+
+    // Rename "old_name.txt" to "new_name.txt"
+    if (rename("response.txt", szFileName) != 0)
+    {
+        perror("Error renaming file");
+    }
+    return 0;
+
     printf("\n");
+
+    free(pszHeader);
 
     fclose(pResponseFile);
     close(iSockFd);

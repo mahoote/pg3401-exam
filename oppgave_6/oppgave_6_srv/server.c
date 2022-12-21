@@ -126,10 +126,21 @@ int main(int argc, char *argv[])
             // Set correct Content-Type.
             char *pszContentType = getContentType(pszFilePath);
 
+            // Get the filename.
+            char *pszFileName = strrchr(pszFilePath, '/');
+
+            if (pszFileName != NULL)
+            {
+                // Point to the character after '\'
+                pszFileName++;
+
+                printf("Filename: %s\n", pszFileName);
+            }
+
             // Send the header to the client
             char szHeader[256];
             sprintf(szHeader, "HTTP/1.1 200 OK\r\nContent-Type: %s\r\nContent-Length: %d\r\nFile-Name: %s\r\n\r\n",
-                    pszContentType, iFileSize, "index.html");
+                    pszContentType, iFileSize, pszFileName);
             send(iClientAccept, szHeader, strlen(szHeader), 0);
 
             // Send the contents of the file
