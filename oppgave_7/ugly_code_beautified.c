@@ -18,14 +18,14 @@ int main(int argc, char *argv[])
       int iRandNumber = rand() % 5;
       ppszWordList[i] = (char *)malloc(256 * sizeof(char));
       strcpy(ppszWordList[i], pszWordExamples[iRandNumber]);
-   i++;
+      i++;
    }
 
    size_t a = 0;
    while ( a < iWords)
    {
       printf("The %d. word: %s\n", a, ppszWordList[a]);
-   a++;
+      a++;
    }
 
    return 0;

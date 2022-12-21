@@ -3,11 +3,13 @@
 #include <string.h>
 #include <stdbool.h>
 
-void addIndent(FILE **out_file, int *iIndentIndex)
+#define INDENT_SIZE 3
+
+void addIndent(FILE **_ppfOutFile, int *_piIndentIndex, int _iIndentSize)
 {
-	for (size_t i = 0; i < *iIndentIndex * 3; i++)
+	for (size_t i = 0; i < *_piIndentIndex * _iIndentSize; i++)
 	{
-		fputc(' ', *out_file);
+		fputc(' ', *_ppfOutFile);
 	}
 }
 
@@ -48,21 +50,21 @@ int main(int argc, char *argv[])
 	}
 
 	int iIndentIndex = 0;
-	int iLoopVars = 0;
-	char **ppszLoopVars = (char **)malloc(iLoopVars * sizeof(char *));
+	int iNumLoopVars = 0;
+	char **ppszLoopVars = (char **)malloc(iNumLoopVars * sizeof(char *));
 
 	// Read the input file line by line and convert for loops to while loops
-	char line[1000];
-	while (fgets(line, sizeof(line), in_file))
+	char szCodeLine[1024];
+	while (fgets(szCodeLine, sizeof(szCodeLine), in_file))
 	{
 		// Check if the line is a for loop
-		if (strstr(line, "for (") != NULL)
+		if (strstr(szCodeLine, "for (") != NULL)
 		{
 			iIndentIndex++;
 
 			// Extract the loop variable, condition, and increment from the for loop
-			char *start = strchr(line, '(');
-			char *end = strchr(line, ')');
+			char *start = strchr(szCodeLine, '(');
+			char *end = strchr(szCodeLine, ')');
 			if (start == NULL || end == NULL)
 			{
 				printf("Error: invalid for loop syntax.\n");
@@ -75,7 +77,7 @@ int main(int argc, char *argv[])
 			sscanf(start + 1, "%[^;];%[^;];%s", loop_var, condition, increment);
 
 			bool bLoopVarExists = false;
-			for (size_t i = 0; i < iLoopVars; i++)
+			for (size_t i = 0; i < iNumLoopVars; i++)
 			{
 				if (strcmp(ppszLoopVars[i], loop_var) == 0)
 				{
@@ -83,13 +85,14 @@ int main(int argc, char *argv[])
 				}
 			}
 
+			// Checking if the variable has been declared. If so, do not redeclare it.
 			if (!bLoopVarExists)
 			{
 				// Save loop var in list.
-				iLoopVars++;
-				ppszLoopVars = (char **)realloc(ppszLoopVars, (iLoopVars) * sizeof(ppszLoopVars));
-				ppszLoopVars[iLoopVars - 1] = (char *)malloc(100 * sizeof(char));
-				strcpy(ppszLoopVars[iLoopVars - 1], loop_var);
+				iNumLoopVars++;
+				ppszLoopVars = (char **)realloc(ppszLoopVars, (iNumLoopVars) * sizeof(ppszLoopVars));
+				ppszLoopVars[iNumLoopVars - 1] = (char *)malloc(100 * sizeof(char));
+				strcpy(ppszLoopVars[iNumLoopVars - 1], loop_var);
 			}
 			else
 			{
@@ -105,19 +108,21 @@ int main(int argc, char *argv[])
 			}
 
 			// Write the loop variable and condition to the output file
-			addIndent(&out_file, &iIndentIndex);
+			addIndent(&out_file, &iIndentIndex, INDENT_SIZE);
 			fprintf(out_file, "%s;\n", loop_var);
 
-			addIndent(&out_file, &iIndentIndex);
+			addIndent(&out_file, &iIndentIndex, INDENT_SIZE);
 			fprintf(out_file, "while (%s)\n", condition);
 
+			iIndentIndex++;
+
 			// Read the input file until the end of the for loop body
-			while (fgets(line, sizeof(line), in_file) && strstr(line, "}") == NULL)
+			while (fgets(szCodeLine, sizeof(szCodeLine), in_file) && strstr(szCodeLine, "}") == NULL)
 			{
 				// Replace tabs with 3 spaces and write the line to the output file
-				for (int i = 0; i < strlen(line); i++)
+				for (int i = 0; i < strlen(szCodeLine); i++)
 				{
-					if (line[i] == '\t')
+					if (szCodeLine[i] == '\t')
 					{
 						fputc(' ', out_file);
 						fputc(' ', out_file);
@@ -125,15 +130,17 @@ int main(int argc, char *argv[])
 					}
 					else
 					{
-						fputc(line[i], out_file);
+						fputc(szCodeLine[i], out_file);
 					}
 				}
 			}
 			// Write the increment to the output file
-			addIndent(&out_file, &iIndentIndex);
+			addIndent(&out_file, &iIndentIndex, INDENT_SIZE);
 			fprintf(out_file, "%s;\n", increment);
 
-			addIndent(&out_file, &iIndentIndex);
+			iIndentIndex--;
+
+			addIndent(&out_file, &iIndentIndex, INDENT_SIZE);
 			fprintf(out_file, "}\n");
 
 			iIndentIndex--;
@@ -141,9 +148,9 @@ int main(int argc, char *argv[])
 		else
 		{
 			// Replace tabs with 3 spaces and write the line to the output file
-			for (int i = 0; i < strlen(line); i++)
+			for (int i = 0; i < strlen(szCodeLine); i++)
 			{
-				if (line[i] == '\t')
+				if (szCodeLine[i] == '\t')
 				{
 					fputc(' ', out_file);
 					fputc(' ', out_file);
@@ -151,7 +158,7 @@ int main(int argc, char *argv[])
 				}
 				else
 				{
-					fputc(line[i], out_file);
+					fputc(szCodeLine[i], out_file);
 				}
 			}
 		}
@@ -160,6 +167,12 @@ int main(int argc, char *argv[])
 	// Close the input and output files
 	fclose(in_file);
 	fclose(out_file);
+
+	for (size_t i = 0; i < iNumLoopVars; i++)
+	{
+		free(ppszLoopVars[i]);
+	}
+	free(ppszLoopVars);
 
 	return 0;
 }
