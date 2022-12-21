@@ -7,57 +7,75 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 
-#define BUFFER_SIZE 1024
+#include "include/contentType.h"
 
+#define BUF_SIZE 1024
+
+/* main() -------------------------------------------
+    Revision    : 1.0.0
+
+    Comments:
+    Simple HTTP server. When run, it will bind to the
+    IP address "127.0.0.1" (localhost) and the port number 8080, and listen
+    for incoming connections. When a client connects to the server, it
+    will read the client's HTTP GET request, parse it to extract the requested
+    file path, open the file, and send the file's contents back to the client
+    along with an HTTP response header. If the file cannot be opened, the server
+    will send an HTTP response indicating that the requested file was not found.
+   -------------------------------------------------- */
 int main(int argc, char *argv[])
 {
-    int iSocket;
+    int iSockFd;
     unsigned short ushPort;
     struct sockaddr_in srvAddr = {0};
     char *pszHostAddress = "127.0.0.1";
 
-    // Create a socket
-    iSocket = socket(AF_INET, SOCK_STREAM, 0);
-    if (iSocket < 0)
+    ushPort = atoi("8080");
+
+    // Create a socket.
+    iSockFd = socket(AF_INET, SOCK_STREAM, 0);
+    if (iSockFd < 0)
     {
         perror("Error creating socket");
         exit(1);
     }
 
-    ushPort = atoi("8080");
-
-    // Bind the socket
+    // Bind the socket.
     memset(&srvAddr, 0, sizeof(srvAddr));
 
     srvAddr.sin_family = AF_INET;
     srvAddr.sin_port = htons(ushPort);
     srvAddr.sin_addr.s_addr = inet_addr(pszHostAddress);
 
-    if (bind(iSocket, (struct sockaddr *)&srvAddr, sizeof(srvAddr)) < 0)
+    if (bind(iSockFd, (struct sockaddr *)&srvAddr, sizeof(srvAddr)) < 0)
     {
         perror("Error binding socket");
         exit(1);
     }
 
+    // Print hyperlink to server address.
+    printf("Server startet at \033]8;;http://%s:%d\033\\http://%s:%d\033]8;;\033\\\n",
+           pszHostAddress, ushPort, pszHostAddress, ushPort);
+
     while (1)
     {
-        // Listen for incoming connections
-        listen(iSocket, 5);
+        // Listen for incoming connections.
+        listen(iSockFd, 5);
 
-        // Accept incoming connections
+        // Accept incoming connections.
         struct sockaddr_in cliAddr;
         socklen_t uiCliAddrSize = sizeof(cliAddr);
 
-        int iClientAccept = accept(iSocket, (struct sockaddr *)&cliAddr, &uiCliAddrSize);
+        int iClientAccept = accept(iSockFd, (struct sockaddr *)&cliAddr, &uiCliAddrSize);
         if (iClientAccept < 0)
         {
             perror("Error accepting connection");
             exit(1);
         }
 
-        // Read the incoming GET request
-        char szBuffer[BUFFER_SIZE];
-        int iRecvStatus = recv(iClientAccept, szBuffer, BUFFER_SIZE - 1, 0);
+        // Read the incoming GET request.
+        char szBuffer[BUF_SIZE];
+        int iRecvStatus = recv(iClientAccept, szBuffer, BUF_SIZE - 1, 0);
 
         if (iRecvStatus < 0)
         {
@@ -66,7 +84,7 @@ int main(int argc, char *argv[])
         }
         szBuffer[iRecvStatus] = '\0';
 
-        // Parse the GET request to extract the file path
+        // Parse the GET request to extract the file path.
         char *pszFilePath = NULL;
         if (strncmp(szBuffer, "GET ", 4) == 0)
         {
@@ -82,49 +100,79 @@ int main(int argc, char *argv[])
             {
                 *pszEndOfPath = '\0';
             }
+
+            // Redirect to index page if path is empty.
+            if (strcmp(pszFilePath, "") == 0)
+            {
+                memset(pszFilePath, '\0', sizeof(pszFilePath));
+                strcpy(pszFilePath, "public/index.html");
+            }
         }
 
         printf("GET /%s\n", pszFilePath);
 
-        // Open the requested file
-        FILE *pFile = fopen(pszFilePath, "r");
+        // Open the requested file.
+        FILE *pFile = fopen(pszFilePath, "rb");
         if (pFile == NULL)
         {
             perror("Error opening file");
         }
         else
         {
-            // Set correct Content-Type.
-            char szContentType[15] = "text/plain";
+            fseek(pFile, 0, SEEK_END);
+            long iFileSize = ftell(pFile);
+            rewind(pFile);
 
-            if (strstr(pszFilePath, ".html") != NULL)
+            // Set correct Content-Type.
+            char *pszContentType = getContentType(pszFilePath);
+
+            // Get the filename.
+            char *pszFileName = strrchr(pszFilePath, '/');
+
+            if (pszFileName != NULL)
             {
-                memset(szContentType, '\0', sizeof(szContentType));
-                strcpy(szContentType, "text/html");
+                // Point to the character after '\'.
+                pszFileName++;
+
+                printf("Filename: %s\n", pszFileName);
             }
 
-            // Send the header to the client
+            // Send the header to the client.
             char szHeader[256];
-            sprintf(szHeader, "HTTP/1.1 200 OK\r\nContent-Type: %s\r\n\r\n", szContentType);
+            sprintf(szHeader, "HTTP/1.1 200 OK\r\nContent-Type: %s\r\nFile-Name: %s\r\n\r\n",
+                    pszContentType, pszFileName);
             send(iClientAccept, szHeader, strlen(szHeader), 0);
 
-            // Send the contents of the file as the response
-            char szResponse[BUFFER_SIZE];
-            while (fgets(szResponse, BUFFER_SIZE, pFile) != NULL)
+            // Send the contents of the file.
+            char *szDataBuffer = (char *)malloc(iFileSize);
+
+            if (szDataBuffer == NULL)
             {
-                send(iClientAccept, szResponse, strlen(szResponse), 0);
+                fprintf(stderr, "Error allocating buffer memory\n");
             }
 
-            // Close the file
+            size_t iNumBytesRead;
+            iNumBytesRead = fread(szDataBuffer, 1, iFileSize, pFile);
+
+            if (iNumBytesRead != iFileSize)
+            {
+                fprintf(stderr, "Error reading file to buffer\n");
+            }
+            else
+            {
+                send(iClientAccept, szDataBuffer, iNumBytesRead, 0);
+            }
+
+            free(szDataBuffer);
             fclose(pFile);
         }
 
-        // Close the client socket
+        // Client.
         close(iClientAccept);
     }
 
-    // Close the server socket
-    close(iSocket);
+    // Server.
+    close(iSockFd);
 
     return 0;
 }

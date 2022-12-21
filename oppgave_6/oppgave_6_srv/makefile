@@ -6,11 +6,11 @@ CLFAGS += -I$(INCLDIR)
 OBJDIR = obj
 
 # List all the header files here.
-_DEPS = server.h
+_DEPS = server.h contentType.h
 DEPS = $(patsubst %,$(INCLDIR)/%, $(_DEPS))
 
 # List all source files here, but give .o file convention.
-_OBJS = server.o
+_OBJS = server.o contentType.o
 OBJS = $(patsubst %,$(OBJDIR)/%, $(_OBJS))
 
 $(OBJDIR)/%.o: %.c $(DEPS)
