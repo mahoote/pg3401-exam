@@ -148,12 +148,9 @@ int main(int argc, char *argv[])
         if (pszHeader == NULL)
         {
             pszHeader = splitString(&pszBody, "\r\n\r\n");
-
-            printf("%s\n\n", pszHeader);
         }
         if (pszHeader != NULL)
         {
-            printf("%s", pszBody);
             fprintf(pResponseFile, "%s", pszBody);
         }
 
@@ -196,6 +193,8 @@ int main(int argc, char *argv[])
     {
         perror("Error renaming file");
     }
+
+    printf("Saved file 'response/%s'.\n", szFileName);
 
     free(pszHeader);
 
