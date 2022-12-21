@@ -32,7 +32,7 @@ int main(int argc, char *argv[])
 
     ushPort = atoi("8080");
 
-    // Create a socket
+    // Create a socket.
     iSockFd = socket(AF_INET, SOCK_STREAM, 0);
     if (iSockFd < 0)
     {
@@ -40,7 +40,7 @@ int main(int argc, char *argv[])
         exit(1);
     }
 
-    // Bind the socket
+    // Bind the socket.
     memset(&srvAddr, 0, sizeof(srvAddr));
 
     srvAddr.sin_family = AF_INET;
@@ -53,16 +53,16 @@ int main(int argc, char *argv[])
         exit(1);
     }
 
-    // Print hyperlink to server.
+    // Print hyperlink to server address.
     printf("Server startet at \033]8;;http://%s:%d\033\\http://%s:%d\033]8;;\033\\\n",
            pszHostAddress, ushPort, pszHostAddress, ushPort);
 
     while (1)
     {
-        // Listen for incoming connections
+        // Listen for incoming connections.
         listen(iSockFd, 5);
 
-        // Accept incoming connections
+        // Accept incoming connections.
         struct sockaddr_in cliAddr;
         socklen_t uiCliAddrSize = sizeof(cliAddr);
 
@@ -73,7 +73,7 @@ int main(int argc, char *argv[])
             exit(1);
         }
 
-        // Read the incoming GET request
+        // Read the incoming GET request.
         char szBuffer[BUF_SIZE];
         int iRecvStatus = recv(iClientAccept, szBuffer, BUF_SIZE - 1, 0);
 
@@ -84,7 +84,7 @@ int main(int argc, char *argv[])
         }
         szBuffer[iRecvStatus] = '\0';
 
-        // Parse the GET request to extract the file path
+        // Parse the GET request to extract the file path.
         char *pszFilePath = NULL;
         if (strncmp(szBuffer, "GET ", 4) == 0)
         {
@@ -111,16 +111,16 @@ int main(int argc, char *argv[])
 
         printf("GET /%s\n", pszFilePath);
 
-        // Open the requested file
-        FILE *pFile = fopen(pszFilePath, "r");
+        // Open the requested file.
+        FILE *pFile = fopen(pszFilePath, "rb");
         if (pFile == NULL)
         {
             perror("Error opening file");
         }
         else
         {
-            fseek(pFile, 0L, SEEK_END);
-            int iFileSize = ftell(pFile);
+            fseek(pFile, 0, SEEK_END);
+            long iFileSize = ftell(pFile);
             rewind(pFile);
 
             // Set correct Content-Type.
@@ -131,35 +131,47 @@ int main(int argc, char *argv[])
 
             if (pszFileName != NULL)
             {
-                // Point to the character after '\'
+                // Point to the character after '\'.
                 pszFileName++;
 
                 printf("Filename: %s\n", pszFileName);
             }
 
-            // Send the header to the client
+            // Send the header to the client.
             char szHeader[256];
-            sprintf(szHeader, "HTTP/1.1 200 OK\r\nContent-Type: %s\r\nContent-Length: %d\r\nFile-Name: %s\r\n\r\n",
-                    pszContentType, iFileSize, pszFileName);
+            sprintf(szHeader, "HTTP/1.1 200 OK\r\nContent-Type: %s\r\nFile-Name: %s\r\n\r\n",
+                    pszContentType, pszFileName);
             send(iClientAccept, szHeader, strlen(szHeader), 0);
 
-            // Send the contents of the file
-            char szDataBuffer[BUF_SIZE];
+            // Send the contents of the file.
+            char *szDataBuffer = (char *)malloc(iFileSize);
+
+            if (szDataBuffer == NULL)
+            {
+                fprintf(stderr, "Error allocating buffer memory\n");
+            }
+
             size_t iNumBytesRead;
-            while ((iNumBytesRead = fread(szDataBuffer, 1, BUF_SIZE, pFile)) > 0)
+            iNumBytesRead = fread(szDataBuffer, 1, iFileSize, pFile);
+
+            if (iNumBytesRead != iFileSize)
+            {
+                fprintf(stderr, "Error reading file to buffer\n");
+            }
+            else
             {
                 send(iClientAccept, szDataBuffer, iNumBytesRead, 0);
             }
 
-            // Close the file
+            free(szDataBuffer);
             fclose(pFile);
         }
 
-        // Close the client socket
+        // Client.
         close(iClientAccept);
     }
 
-    // Close the server socket
+    // Server.
     close(iSockFd);
 
     return 0;

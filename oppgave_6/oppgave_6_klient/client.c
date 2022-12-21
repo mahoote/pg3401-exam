@@ -3,6 +3,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <sys/types.h>
+#include <sys/stat.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <netdb.h>
@@ -42,30 +43,6 @@ char *splitString(char **_ppszOriginal, const char *_pcszDelimiter)
     return pszNewString;
 }
 
-// void getHeaderFields() {
-//     char szContentType[16];
-
-//         pszHeaderFieldValue = strstr(szResponse, "Content-Type");
-//         if (pszHeaderFieldValue)
-//         {
-//             pszHeaderFieldValue += strlen("Content-Type: ");
-
-//             while (!isalpha(*pszHeaderFieldValue))
-//             {
-//                 pszHeaderFieldValue++;
-//             }
-
-//             char *pszEndOfLine = strstr(pszHeaderFieldValue, "\n");
-//             if (pszEndOfLine)
-//             {
-//                 strncpy(szContentType, pszHeaderFieldValue, pszEndOfLine - pszHeaderFieldValue);
-//                 szContentType[pszEndOfLine - pszHeaderFieldValue] = '\0';
-//             }
-
-//             printf("--Content-Type: %s\n", szContentType);
-//         }
-// }
-
 /* main() -------------------------------------------
     Revision    : 1.0.0
 
@@ -91,7 +68,6 @@ int main(int argc, char *argv[])
     }
 
     char *pszUrlPath = argv[1];
-
     pHostnm = gethostbyname(pszHostAddress);
     ushPort = atoi("8080");
 
@@ -133,15 +109,21 @@ int main(int argc, char *argv[])
         exit(1);
     }
 
-    // Wait for the response from the server
-    char szResponse[BUF_SIZE];
-    int iRecvStatus;
+    // Create a subfolder to keep all downloaded files.
+    struct stat st = {0};
+    if (stat("response", &st) == -1)
+    {
+        printf("Created folder 'response'.");
+        mkdir("response", 0700);
+    }
 
+    // Wait for the response from the server
+    int iRecvStatus;
+    int iContentLength = 0;
+    char szResponse[BUF_SIZE];
     char *pszHeader = NULL;
 
-    int iContentLength = 0;
-
-    FILE *pResponseFile = fopen("response.txt", "w");
+    FILE *pResponseFile = fopen("response/response.txt", "w");
     if (pResponseFile == NULL)
     {
         perror("Error opening file");
@@ -160,8 +142,7 @@ int main(int argc, char *argv[])
             exit(1);
         }
 
-        // Either print the whole response or split the header and body
-        // if the delimiter occurs.
+        // Split the header and body when the delimiter occurs.
         char *pszBody = szResponse;
 
         if (pszHeader == NULL)
@@ -180,12 +161,14 @@ int main(int argc, char *argv[])
 
     } while (iRecvStatus != 0);
 
+    printf("\n");
+
+    // Get filename from header and rename file to correct format.
     char szFileName[256];
 
     char *pszHeaderFieldValue = strstr(pszHeader, "File-Name");
     if (pszHeaderFieldValue)
     {
-        // Optimized
         pszHeaderFieldValue += strlen("File-Name: ");
 
         while (!isalpha(*pszHeaderFieldValue))
@@ -193,27 +176,26 @@ int main(int argc, char *argv[])
             pszHeaderFieldValue++;
         }
 
-        // Fixed
         char *pszEndOfLine = strstr(pszHeaderFieldValue, "\r\n");
         if (pszEndOfLine)
         {
             strncpy(szFileName, pszHeaderFieldValue, pszEndOfLine - pszHeaderFieldValue);
             szFileName[pszEndOfLine - pszHeaderFieldValue] = '\0';
         }
+        // If the field is the last in the header.
         else
         {
             strcpy(szFileName, pszHeaderFieldValue);
         }
     }
 
-    // Rename "old_name.txt" to "new_name.txt"
-    if (rename("response.txt", szFileName) != 0)
+    char szNewFilePath[256];
+    sprintf(szNewFilePath, "response/%s", szFileName);
+
+    if (rename("response/response.txt", szNewFilePath) != 0)
     {
         perror("Error renaming file");
     }
-    return 0;
-
-    printf("\n");
 
     free(pszHeader);
 
