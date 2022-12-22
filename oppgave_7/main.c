@@ -4,6 +4,15 @@
 
 #include "include/formatConvert.h"
 
+/* main() -------------------------------------------
+	Revision    : 1.0.0
+
+	Comments:
+	Gets the input file from the argument and opens it.
+	Writes to an output file with the input files name + "_beautified.c".
+	Then goes into a while loop where it calls the formatCode().
+	The code exits when the entire input file is formated into the output file.
+   -------------------------------------------------- */
 int main(int _iArgc, char *_pszArgv[])
 {
 	// Check arguments.

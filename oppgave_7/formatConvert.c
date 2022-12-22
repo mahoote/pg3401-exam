@@ -5,6 +5,12 @@
 
 #include "include/formatConvert.h"
 
+/* addIndent() --------------------------------------
+    Revision    : 1.0.0
+
+    Comments:
+    Adds indents to make the code format correct.
+   -------------------------------------------------- */
 void addIndent(FILE **_ppfOutputCode, int _iIndentIndex, int _iIndentSize)
 {
     for (size_t i = 0; i < (_iIndentIndex * _iIndentSize); i++)
@@ -13,6 +19,16 @@ void addIndent(FILE **_ppfOutputCode, int _iIndentIndex, int _iIndentSize)
     }
 }
 
+/* formatCode() -------------------------------------
+    Revision    : 1.0.0
+
+    Comments:
+    Converts a for loop to a while loop, and tab to 3 spaces.
+    Iterates by code lines. If a line contains the for loop, it
+    first ajusts the indentation level accordingly, then gets the
+    loop variable, condition and increment. Then the code is written
+    as a while loop. It's also recursive, to it can format nested loops.
+   -------------------------------------------------- */
 int formatCode(FILE **_ppfInputCode, FILE **_ppfOutputCode, int *_piIndentIndex, int _iStartIndentIndex, int *_piNumLoopVars, char ***_pppszLoopVars, char (*pszCodeLine)[])
 {
     char szFullCodeLine[CODE_LINE_SIZE];
@@ -67,15 +83,51 @@ int formatCode(FILE **_ppfInputCode, FILE **_ppfOutputCode, int *_piIndentIndex,
         }
         else
         {
-            char *pszSpaceAfterLoopVar = strchr(szLoopVar, ' ');
-
-            // Check if a space was found.
-            if (!pszSpaceAfterLoopVar)
+            // Get the string before the '='.
+            char *pszDelimPos = strstr(szLoopVar, "=");
+            if (pszDelimPos == NULL)
             {
-                printf("Error: invalid loop variable.\n");
+                return 1;
             }
 
-            memcpy(szLoopVar, pszSpaceAfterLoopVar + 1, 100);
+            size_t uiLength = pszDelimPos - szLoopVar;
+            char *pszNewString = malloc(uiLength + 1);
+            if (pszNewString == NULL)
+            {
+                perror("Error allocating memory for new string");
+                exit(1);
+            }
+
+            memcpy(pszNewString, szLoopVar, uiLength);
+            pszNewString[uiLength] = '\0';
+
+            // Get the word count.
+            int iBeforeEqualsWordCount = 0;
+
+            for (size_t i = 0; pszNewString[i] != '\0'; i++)
+            {
+                char ch = pszNewString[i];
+                if (ch == ' ')
+                    continue;
+                if (i == 0 || pszNewString[i - 1] == ' ')
+                    iBeforeEqualsWordCount++;
+            }
+
+            free(pszNewString);
+
+            // Only remove the variable type if it is present.
+            if (iBeforeEqualsWordCount > 1)
+            {
+                char *pszSpaceAfterLoopVar = strchr(szLoopVar, ' ');
+
+                // Check if a space was found.
+                if (!pszSpaceAfterLoopVar)
+                {
+                    printf("Error: invalid loop variable.\n");
+                }
+
+                memcpy(szLoopVar, pszSpaceAfterLoopVar + 1, 100);
+            }
         }
 
         // Write the loop variable and condition to the output file.
