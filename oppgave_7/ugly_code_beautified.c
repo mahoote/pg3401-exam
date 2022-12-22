@@ -12,21 +12,63 @@ int main(int argc, char *argv[])
 
    srand(time(NULL));
 
-   size_t i = 0;
-   while ( i < iWords)
+   if(1 == 1) 
    {
+      int i = 0;
+
+      i = 0;
+      while ( i < 5) {
+         printf("%d. line\n");
+         i++;
+      }
+      
+   }
+
+
+   size_t i = 0;
+   while ( i < iWords) {
+
       int iRandNumber = rand() % 5;
       ppszWordList[i] = (char *)malloc(256 * sizeof(char));
       strcpy(ppszWordList[i], pszWordExamples[iRandNumber]);
+
       i++;
    }
 
-   size_t a = 0;
-   while ( a < iWords)
+   i = 0;
+   while ( i < iWords)
    {
-      printf("The %d. word: %s\n", a, ppszWordList[a]);
-      a++;
+      size_t a;
+      a = 0;
+      while ( a < 3)
+      {
+         printf("Hello ");
+
+         size_t b = 0;
+         while ( b < 1) {
+            printf("World");
+            b++;
+         }
+
+         b = 0;
+         while ( b < 1) {
+            printf("\n");
+            b++;
+         }
+         a++;
+      }
+
+      a = 0;
+      while ( a < 3)
+      {
+         // Remember to add awesome code!
+         a++;
+      }
+
+      printf("Word %d: %s", i, ppszWordList[i]);
+      i++;
    }
+   
 
    return 0;
 }

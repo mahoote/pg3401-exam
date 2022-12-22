@@ -11,11 +11,11 @@ CLFAGS += -I$(INCLDIR)
 OBJDIR = obj
 
 # List all the header files here.
-_DEPS = main.h
+_DEPS = formatConvert.h
 DEPS = $(patsubst %,$(INCLDIR)/%, $(_DEPS))
 
 # List all source files here, but give .o file convention.
-_OBJS = main.o
+_OBJS = main.o formatConvert.o
 OBJS = $(patsubst %,$(OBJDIR)/%, $(_OBJS))
 
 $(OBJDIR)/%.o: %.c $(DEPS)
