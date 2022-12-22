@@ -47,7 +47,7 @@ int main(int _iArgc, char *_pszArgv[])
 	char szCodeLine[CODE_LINE_SIZE];
 
 	// Read the input file line by line and convert for loops to while loops.
-	while (fgets(szCodeLine, sizeof(szCodeLine), pfInputCode))
+	while (fgets(szCodeLine, CODE_LINE_SIZE, pfInputCode))
 	{
 		formatCode(&pfInputCode, &pfOutputCode, &iIndentIndex, 0, &iNumLoopVars, &ppszLoopVars, &szCodeLine);
 	}

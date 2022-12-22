@@ -5,28 +5,31 @@
 
 #include "include/formatConvert.h"
 
-void addIndent(FILE **_ppfOutFile, int _iIndentIndex, int _iIndentSize)
+void addIndent(FILE **_ppfOutputCode, int _iIndentIndex, int _iIndentSize)
 {
     for (size_t i = 0; i < (_iIndentIndex * _iIndentSize); i++)
     {
-        fputc(' ', *_ppfOutFile);
+        fputc(' ', *_ppfOutputCode);
     }
 }
 
 int formatCode(FILE **_ppfInputCode, FILE **_ppfOutputCode, int *_piIndentIndex, int _iStartIndentIndex, int *_piNumLoopVars, char ***_pppszLoopVars, char (*pszCodeLine)[])
 {
+    char szFullCodeLine[CODE_LINE_SIZE];
+    strcpy(szFullCodeLine, *pszCodeLine);
 
-    if (strstr(*pszCodeLine, "{") != NULL)
+    // Add or remove indent index based on '{}'.
+    if (strstr(szFullCodeLine, "{") != NULL && strstr(szFullCodeLine, "for (") == NULL)
     {
         (*_piIndentIndex)++;
     }
-    if (strstr(*pszCodeLine, "}") != NULL)
+    if (strstr(szFullCodeLine, "}") != NULL)
     {
         (*_piIndentIndex)--;
     }
 
-    // Check if the line is a for loop
-    if (strstr(*pszCodeLine, "for (") != NULL)
+    // Check if the line is a for loop.
+    if (strstr(szFullCodeLine, "for (") != NULL)
     {
         // Extract the loop variable, condition, and increment from the for loop
         char *start = strchr(*pszCodeLine, '(');
@@ -74,11 +77,20 @@ int formatCode(FILE **_ppfInputCode, FILE **_ppfOutputCode, int *_piIndentIndex,
         }
 
         // Write the loop variable and condition to the output file
-        addIndent(_ppfOutputCode, *_piIndentIndex, INDENT_SIZE);
+        addIndent(_ppfOutputCode, (*_piIndentIndex), INDENT_SIZE);
         fprintf(*_ppfOutputCode, "%s;\n", loop_var);
 
-        addIndent(_ppfOutputCode, *_piIndentIndex, INDENT_SIZE);
-        fprintf(*_ppfOutputCode, "while (%s)\n", condition);
+        // Print while code line based on if the '{' is on the same line.
+        if(strstr(szFullCodeLine, "{") != NULL) {
+            addIndent(_ppfOutputCode, (*_piIndentIndex), INDENT_SIZE);
+            fprintf(*_ppfOutputCode, "while (%s) {\n", condition);
+            
+            // Add indent when entered the loop.
+            (*_piIndentIndex)++;
+        } else {
+            addIndent(_ppfOutputCode, (*_piIndentIndex), INDENT_SIZE);
+            fprintf(*_ppfOutputCode, "while (%s)\n", condition);
+        }
 
         // Read the input file until the end of the for loop body
         while (fgets(*pszCodeLine, CODE_LINE_SIZE, *_ppfInputCode) && strstr(*pszCodeLine, "}") == NULL)
