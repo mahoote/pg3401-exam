@@ -32,77 +32,83 @@ int formatCode(FILE **_ppfInputCode, FILE **_ppfOutputCode, int *_piIndentIndex,
     if (strstr(szFullCodeLine, "for (") != NULL)
     {
         // Extract the loop variable, condition, and increment from the for loop
-        char *start = strchr(*pszCodeLine, '(');
-        char *end = strchr(*pszCodeLine, ')');
-        if (start == NULL || end == NULL)
+        char *pszLoopConditionStart = strchr(*pszCodeLine, '(');
+        char *pszLoopConditionEnd = strchr(*pszCodeLine, ')');
+
+        if (pszLoopConditionStart == NULL || pszLoopConditionEnd == NULL)
         {
             printf("Error: invalid for loop syntax.\n");
             return 1;
         }
-        *end = '\0';
-        char loop_var[100];
-        char condition[100];
-        char increment[100];
-        sscanf(start + 1, "%[^;];%[^;];%s", loop_var, condition, increment);
+        *pszLoopConditionEnd = '\0';
 
+        char szLoopVar[100];
+        char szLoopCondition[100];
+        char szLoopIncrement[100];
+        sscanf(pszLoopConditionStart + 1, "%[^;];%[^;];%s", szLoopVar, szLoopCondition, szLoopIncrement);
+
+        // Checking if the variable has been declared. If so, do not redeclare it.
         bool bLoopVarExists = false;
         for (size_t i = 0; i < *_piNumLoopVars; i++)
         {
-            if (strcmp((*_pppszLoopVars)[i], loop_var) == 0)
+            if (strcmp((*_pppszLoopVars)[i], szLoopVar) == 0)
             {
                 bLoopVarExists = true;
             }
         }
 
-        // Checking if the variable has been declared. If so, do not redeclare it.
         if (!bLoopVarExists)
         {
-            // Save loop var in list.
+            // Save szLoopVar in list.
             (*_piNumLoopVars)++;
             (*_pppszLoopVars) = (char **)realloc((*_pppszLoopVars), (*_piNumLoopVars) * sizeof(char **));
             (*_pppszLoopVars)[(*_piNumLoopVars) - 1] = (char *)malloc(100 * sizeof(char));
-            strcpy((*_pppszLoopVars)[(*_piNumLoopVars) - 1], loop_var);
+            strcpy((*_pppszLoopVars)[(*_piNumLoopVars) - 1], szLoopVar);
         }
         else
         {
-            char *first_space = strchr(loop_var, ' ');
+            char *pszSpaceAfterLoopVar = strchr(szLoopVar, ' ');
 
-            // Check if a space was found
-            if (!first_space)
+            // Check if a space was found.
+            if (!pszSpaceAfterLoopVar)
             {
                 printf("Error: invalid loop variable.\n");
             }
 
-            memcpy(loop_var, first_space + 1, 100);
+            memcpy(szLoopVar, pszSpaceAfterLoopVar + 1, 100);
         }
 
-        // Write the loop variable and condition to the output file
+        // Write the loop variable and condition to the output file.
         addIndent(_ppfOutputCode, (*_piIndentIndex), INDENT_SIZE);
-        fprintf(*_ppfOutputCode, "%s;\n", loop_var);
+        fprintf(*_ppfOutputCode, "%s;\n", szLoopVar);
 
         // Print while code line based on if the '{' is on the same line.
-        if(strstr(szFullCodeLine, "{") != NULL) {
+        if (strstr(szFullCodeLine, "{") != NULL)
+        {
             addIndent(_ppfOutputCode, (*_piIndentIndex), INDENT_SIZE);
-            fprintf(*_ppfOutputCode, "while (%s) {\n", condition);
-            
-            // Add indent when entered the loop.
+            fprintf(*_ppfOutputCode, "while (%s) {\n", szLoopCondition);
+
+            // Add indent because of format.
             (*_piIndentIndex)++;
-        } else {
+        }
+        else
+        {
             addIndent(_ppfOutputCode, (*_piIndentIndex), INDENT_SIZE);
-            fprintf(*_ppfOutputCode, "while (%s)\n", condition);
+            fprintf(*_ppfOutputCode, "while (%s)\n", szLoopCondition);
         }
 
         // Read the input file until the end of the for loop body
         while (fgets(*pszCodeLine, CODE_LINE_SIZE, *_ppfInputCode) && strstr(*pszCodeLine, "}") == NULL)
         {
-            // Check recursivly for multiple for loops.
+            // Check recursively for multiple for loops.
             formatCode(_ppfInputCode, _ppfOutputCode, _piIndentIndex, *_piIndentIndex, _piNumLoopVars, _pppszLoopVars, pszCodeLine);
         }
 
-        // Write the increment to the output file
+        // Write the increment to the output file.
         addIndent(_ppfOutputCode, *_piIndentIndex, INDENT_SIZE);
-        fprintf(*_ppfOutputCode, "%s;\n", increment);
+        fprintf(*_ppfOutputCode, "%s;\n", szLoopIncrement);
 
+        // Close loop.
         (*_piIndentIndex)--;
 
         addIndent(_ppfOutputCode, *_piIndentIndex, INDENT_SIZE);
@@ -110,7 +116,7 @@ int formatCode(FILE **_ppfInputCode, FILE **_ppfOutputCode, int *_piIndentIndex,
     }
     else
     {
-        // Replace tabs with 3 spaces and write the line to the output file
+        // Replace tabs with 3 spaces and write the line to the output file.
         for (int i = 0; i < strlen(*pszCodeLine); i++)
         {
             if ((*pszCodeLine)[i] == '\t')
