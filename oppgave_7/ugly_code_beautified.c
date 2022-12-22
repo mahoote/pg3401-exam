@@ -21,11 +21,25 @@ int main(int argc, char *argv[])
       i++;
    }
 
-   size_t a = 0;
-   while ( a < iWords)
+   i = 0;
+   while ( i < iWords)
    {
-      printf("The %d. word: %s\n", a, ppszWordList[a]);
-      a++;
+      size_t j = 0;
+      while ( j < 3)
+      {
+         printf("Hello ");
+
+         size_t o = 0;
+         while ( o < 1)
+         {
+            printf("World\n");
+            o++;
+         }
+         j++;
+      }
+
+      printf("The %d. word: %s\n", i, ppszWordList[i]);
+      i++;
    }
 
    return 0;

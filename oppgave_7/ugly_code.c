@@ -19,9 +19,19 @@ int main(int argc, char *argv[])
 		strcpy(ppszWordList[i], pszWordExamples[iRandNumber]);
 	}
 
-	for (size_t a = 0; a < iWords; a++)
+	for (size_t i = 0; i < iWords; i++)
 	{
-		printf("The %d. word: %s\n", a, ppszWordList[a]);
+		for (size_t j = 0; j < 3; j++)
+		{
+			printf("Hello ");
+
+			for (size_t o = 0; o < 1; o++)
+			{
+				printf("World\n");
+			}
+		}
+
+		printf("The %d. word: %s\n", i, ppszWordList[i]);
 	}
 
 	return 0;
