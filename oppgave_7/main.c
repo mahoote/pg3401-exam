@@ -5,37 +5,37 @@
 
 #include "include/formatConvert.h"
 
-int main(int argc, char *argv[])
+int main(int _iArgc, char *_pszArgv[])
 {
-	// Check that a file was passed as an argument
-	if (argc < 2)
+	// Check arguments.
+	if (_iArgc < 2)
 	{
 		printf("Error: no input file specified.\n");
 		return 1;
 	}
 
-	// Open the input file for reading
-	FILE *in_file = fopen(argv[1], "r");
-	if (in_file == NULL)
+	// Open the input file for reading.
+	FILE *pfInputCode = fopen(_pszArgv[1], "r");
+	if (pfInputCode == NULL)
 	{
 		printf("Error: unable to open input file.\n");
 		return 1;
 	}
 
-	// Create the output file name by adding "_beautified" before the .c in the file name
-	char out_file_name[100];
-	strcpy(out_file_name, argv[1]);
-	char *dot = strrchr(out_file_name, '.');
-	if (dot == NULL)
+	// Create the output file name by adding "_beautified" before the .c in the file name.
+	char szOutputFileName[100];
+	strcpy(szOutputFileName, _pszArgv[1]);
+	char *pszDotPos = strrchr(szOutputFileName, '.');
+	if (pszDotPos == NULL)
 	{
 		printf("Error: input file must have a .c extension.\n");
 		return 1;
 	}
-	strcpy(dot, "_beautified.c");
+	strcpy(pszDotPos, "_beautified.c");
 
 	// Open the output file for writing
-	FILE *out_file = fopen(out_file_name, "w");
-	if (out_file == NULL)
+	FILE *pfOutputCode = fopen(szOutputFileName, "w");
+	if (pfOutputCode == NULL)
 	{
 		printf("Error: unable to open output file.\n");
 		return 1;
@@ -47,14 +47,15 @@ int main(int argc, char *argv[])
 
 	char szCodeLine[CODE_LINE_SIZE];
 
-	// Read the input file line by line and convert for loops to while loops
-	while (fgets(szCodeLine, sizeof(szCodeLine), in_file))
+	// Read the input file line by line and convert for loops to while loops.
+	while (fgets(szCodeLine, sizeof(szCodeLine), pfInputCode))
 	{
-		formatCode(&in_file, &out_file, &iIndentIndex, 0, &iNumLoopVars, &ppszLoopVars, &szCodeLine);
+		formatCode(&pfInputCode, &pfOutputCode, &iIndentIndex, 0, &iNumLoopVars, &ppszLoopVars, &szCodeLine);
 	}
 
-	fclose(in_file);
-	fclose(out_file);
+	// Clean up.
+	fclose(pfInputCode);
+	fclose(pfOutputCode);
 
 	for (size_t i = 0; i < iNumLoopVars; i++)
 	{
